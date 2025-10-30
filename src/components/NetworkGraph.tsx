@@ -35,7 +35,7 @@ export default function NetworkGraph({
   const [nodes, setNodes] = useState<BANode[]>([])
   const [links, setLinks] = useState<BALink[]>([])
   const [isAnimating, setIsAnimating] = useState(false)
-  const timerRef = useRef<ReturnType<typeof d3.interval> | null>(null)
+  const timerRef = useRef<any | null>(null)
   const stepIndexRef = useRef<number>(0)
   const snapshotsRef = useRef<any[] | null>(null)
 
@@ -146,8 +146,8 @@ export default function NetworkGraph({
   useEffect(() => {
     if (!svgRef.current) return
     const svg = d3.select(svgRef.current)
-    // preserve current zoom transform so user zoom/translate isn't lost when we re-render
-    let prevTransform: d3.ZoomTransform | null = null
+  // preserve current zoom transform so user zoom/translate isn't lost when we re-render
+  let prevTransform: any = null
     try {
       prevTransform = d3.zoomTransform(svg.node() as any)
     } catch (err) {
@@ -162,7 +162,7 @@ export default function NetworkGraph({
     container.append('g').attr('class', 'nodes')
 
     const simulation = d3
-      .forceSimulation<any, any>(nodes as any)
+      .forceSimulation(nodes as any)
       .force('link', d3.forceLink(links as any).id((d: any) => d.id).distance(40))
       .force('charge', d3.forceManyBody().strength(-60))
       .force('center', d3.forceCenter(width / 2, height / 2))
@@ -192,7 +192,7 @@ export default function NetworkGraph({
       .attr('fill', (d: any) => ((degreeMap[(d as any).id] && degreeMap[(d as any).id] > 4) ? '#d62728' : '#1f77b4'))
       .call(
         d3
-          .drag<SVGCircleElement, any>()
+          .drag()
           .on('start', (event: any, d: any) => {
             if (!event.active) simulation.alphaTarget(0.3).restart()
             ;(d as any).fx = (d as any).x
@@ -243,7 +243,7 @@ export default function NetworkGraph({
     }
 
     // zoom: apply transform to container group, and restore previous transform if present
-    const zoom = d3.zoom<SVGSVGElement, unknown>().on('zoom', (event) => {
+    const zoom = d3.zoom().on('zoom', (event: any) => {
       container.attr('transform', event.transform.toString())
     })
     svg.call(zoom as any)
