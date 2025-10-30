@@ -11,6 +11,78 @@
   fill: #333;
 }
 
+.degree-histogram svg {
+  /* improve text rendering on most browsers */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.degree-histogram svg text.hist-count {
+  fill: #071018; /* very dark for contrast */
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.degree-histogram svg text.hist-degree {
+  fill: #0b1220;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.degree-histogram svg {
+  touch-action: none; /* allow d3 zoom gestures */
+}
+
+.degree-histogram .zoom-layer {
+  transform-origin: 0 0;
+}
+
+.degree-histogram .hist-overlay text {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  fill: #fff;
+}
+
+.degree-histogram .hist-overlay rect {
+  pointer-events: none;
+}
+
+/* HTML overlay for histogram info */
+.degree-histogram {
+  position: relative;
+}
+.degree-histogram .hist-info-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(10,20,18,0.85);
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  min-width: 120px;
+  pointer-events: none; /* non-interactive */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+.degree-histogram .hist-info-title {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.degree-histogram .hist-info-line {
+  font-size: 12px;
+  opacity: 0.95;
+}
+
 .degree-histogram rect {
   fill: url(#histGradient) !important;
+}
+
+@media (max-width: 520px) {
+  .degree-histogram {
+    padding: 6px;
+  }
+  .degree-histogram svg {
+    width: 100%;
+    /* increase mobile histogram height so bars + labels are readable */
+    height: 300px;
+  }
 }

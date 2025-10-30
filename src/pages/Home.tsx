@@ -37,11 +37,11 @@ export default function Home() {
             setNodes(ns)
             setLinks(ls)
           }}
-          width={800}
-          height={500}
+          width={720}
+          height={360}
         />
 
-        <DegreeHistogram nodes={nodes} links={links} width={360} height={500} />
+        <DegreeHistogram nodes={nodes} links={links} width={1880} height={360} />
       </div>
 
       <div className="home-controls">

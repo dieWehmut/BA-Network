@@ -1,5 +1,6 @@
-// Controls panel: sliders and buttons
+import { useEffect, useState } from 'react'
 
+// Controls panel: sliders and buttons
 type Props = {
   initialNodes: number
   attachPerStep: number
@@ -16,9 +17,25 @@ type Props = {
 import '../styles/ControlPanel.css'
 
 export default function ControlsPanel({ initialNodes, attachPerStep, steps, onChange, onGenerate, onReset, onPause, onResume, speed, onSpeedChange }: Props) {
+  const [expanded, setExpanded] = useState<boolean>(true)
+  // collapse controls by default on small screens
+  useEffect(() => {
+    function onResize() {
+      setExpanded(window.innerWidth > 680)
+    }
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
   return (
     <div className="controls-panel">
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+        <strong>Controls</strong>
+        <button onClick={() => setExpanded((s) => !s)} style={{ marginLeft: 'auto' }}>{expanded ? 'Hide' : 'Show'}</button>
+      </div>
+      {expanded && (
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
         <label style={{ minWidth: 140 }}>
           Initial nodes: <strong>{initialNodes}</strong>
           <input
@@ -47,17 +64,18 @@ export default function ControlsPanel({ initialNodes, attachPerStep, steps, onCh
         </label>
 
         <div className="actions" style={{ marginLeft: 'auto' }}>
-          <button onClick={onGenerate}>生成</button>
-          <button onClick={onReset}>重置</button>
-          <button onClick={onPause} title="暂停生成">暂停</button>
-          <button onClick={onResume} title="从暂停位置继续">继续</button>
+          <button onClick={onGenerate}>Generate</button>
+          <button onClick={onReset}>Reset</button>
+          <button onClick={onPause} title="Pause generation">Pause</button>
+          <button onClick={onResume} title="Resume from paused position">Resume</button>
           <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span>速度(ms):</span>
+            <span>Speed (ms):</span>
             <input type="range" min={50} max={2000} value={speed} onChange={(e) => onSpeedChange(Number(e.target.value))} />
             <strong style={{ minWidth: 48, textAlign: 'right' }}>{speed}</strong>
           </label>
         </div>
-      </div>
+        </div>
+      )}
     </div>
   )
 }

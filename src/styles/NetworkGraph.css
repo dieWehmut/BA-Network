@@ -15,6 +15,22 @@
   cursor: grab;
 }
 
+.network-graph .network-overlay rect {
+  fill: rgba(2,6,23,0.55);
+  stroke: rgba(255,255,255,0.06);
+}
+
+.network-graph .network-overlay text {
+  fill: #fff;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.network-graph svg {
+  padding: 0; /* ensure svg content can sit at edge */
+}
+
 .network-graph svg:active {
   cursor: grabbing;
 }
@@ -25,4 +41,23 @@
 
 .network-graph .nodes circle {
   stroke: rgba(255,255,255,0.06);
+}
+
+/* ensure the card and svg adapt to small screens */
+@media (max-width: 980px) {
+  .network-graph {
+    padding: 6px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .network-graph {
+    box-shadow: none;
+    border-radius: 6px;
+    padding: 6px;
+  }
+  .network-graph svg {
+    touch-action: none; /* allow d3 zoom to handle gestures */
+  }
 }

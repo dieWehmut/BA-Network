@@ -30,3 +30,29 @@
   gap: 8px;
   align-items: center;
 }
+
+@media (max-width: 680px) {
+  .controls-panel {
+    padding: 10px;
+  }
+  .controls-panel label {
+    min-width: 120px;
+    font-size: 0.9rem;
+  }
+  .controls-panel .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .controls-panel .actions button {
+    width: 100%;
+  }
+  .controls-panel label > input[type="range"] {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .controls-panel label {
+    font-size: 0.85rem;
+  }
+}
