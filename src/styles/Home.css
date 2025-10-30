@@ -1,0 +1,39 @@
+/* Page-level layout for Home */
+.home-root {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: inherit;
+}
+
+.home-main {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 16px;
+  align-items: start;
+}
+
+.home-controls {
+  margin-top: 8px;
+}
+
+@media (max-width: 980px) {
+  .home-main {
+    grid-template-columns: 1fr;
+  }
+}

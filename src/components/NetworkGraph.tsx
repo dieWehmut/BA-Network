@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import generateBASnapshots from '../utils/ba'
 import type { Node as BANode, Link as BALink } from '../utils/ba'
+import '../styles/NetworkGraph.css'
 
 type Props = {
   initialNodes: number
@@ -118,14 +119,47 @@ export default function NetworkGraph({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeSignal, tickDelay])
 
+  // allow changing speed (tickDelay) during an active generation: restart timer with new delay
+  useEffect(() => {
+    const snaps = snapshotsRef.current || []
+    const delay = typeof tickDelay === 'number' ? tickDelay : 600
+    // if a timer is active, restart it with the new delay
+    if (timerRef.current) {
+      try {
+        timerRef.current.stop()
+      } catch (err) {
+        void err
+      }
+      timerRef.current = null
+      // only restart if we still have remaining snapshots
+      if (stepIndexRef.current < snaps.length) {
+        startTimer(delay)
+      }
+    } else if (isAnimating && stepIndexRef.current < snaps.length) {
+      // if we're in animating state but timer isn't present (edge case), start it
+      startTimer(delay)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tickDelay])
+
   // D3 force layout
   useEffect(() => {
     if (!svgRef.current) return
     const svg = d3.select(svgRef.current)
+    // preserve current zoom transform so user zoom/translate isn't lost when we re-render
+    let prevTransform: d3.ZoomTransform | null = null
+    try {
+      prevTransform = d3.zoomTransform(svg.node() as any)
+    } catch (err) {
+      prevTransform = null
+      void err
+    }
     svg.selectAll('*').remove()
 
-  svg.append('g').attr('class', 'links')
-  svg.append('g').attr('class', 'nodes')
+    // container holds links + nodes so we can apply transform to it
+    const container = svg.append('g').attr('class', 'container')
+    container.append('g').attr('class', 'links')
+    container.append('g').attr('class', 'nodes')
 
     const simulation = d3
       .forceSimulation<any, any>(nodes as any)
@@ -154,28 +188,28 @@ export default function NetworkGraph({
       .selectAll('circle')
       .data(nodes)
       .join('circle')
-      .attr('r', (d) => 4 + (degreeMap[d.id] || 0))
-      .attr('fill', (d) => (degreeMap[d.id] && degreeMap[d.id] > 4 ? '#d62728' : '#1f77b4'))
+      .attr('r', (d: any) => 4 + (degreeMap[(d as any).id] || 0))
+      .attr('fill', (d: any) => ((degreeMap[(d as any).id] && degreeMap[(d as any).id] > 4) ? '#d62728' : '#1f77b4'))
       .call(
         d3
           .drag<SVGCircleElement, any>()
-          .on('start', (event, d) => {
+          .on('start', (event: any, d: any) => {
             if (!event.active) simulation.alphaTarget(0.3).restart()
             ;(d as any).fx = (d as any).x
             ;(d as any).fy = (d as any).y
           })
-          .on('drag', (event, d) => {
+          .on('drag', (event: any, d: any) => {
             ;(d as any).fx = event.x
             ;(d as any).fy = event.y
           })
-          .on('end', (event, d) => {
+          .on('end', (event: any, d: any) => {
             if (!event.active) simulation.alphaTarget(0)
             ;(d as any).fx = null
             ;(d as any).fy = null
           }),
       )
 
-    node.append('title').text((d) => `ID: ${d.id}\ndeg: ${degreeMap[d.id] || 0}`)
+  node.append('title').text((d: any) => `ID: ${(d as any).id}\ndeg: ${degreeMap[(d as any).id] || 0}`)
 
     simulation.nodes(nodes as any).on('tick', () => {
       link
@@ -208,12 +242,19 @@ export default function NetworkGraph({
       ;(simulation as any).__stopTimer = stopTimer
     }
 
-    // zoom
-    svg.call(
-      d3.zoom<SVGSVGElement, unknown>().on('zoom', (event) => {
-        svg.selectAll('g').attr('transform', event.transform.toString())
-      }),
-    )
+    // zoom: apply transform to container group, and restore previous transform if present
+    const zoom = d3.zoom<SVGSVGElement, unknown>().on('zoom', (event) => {
+      container.attr('transform', event.transform.toString())
+    })
+    svg.call(zoom as any)
+    if (prevTransform) {
+      try {
+        svg.call((zoom as any).transform, prevTransform)
+      } catch (err) {
+        // best-effort restore
+        void err
+      }
+    }
 
     return () => {
       try {

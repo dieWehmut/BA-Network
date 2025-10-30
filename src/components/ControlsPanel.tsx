@@ -13,23 +13,25 @@ type Props = {
   onSpeedChange: (v: number) => void
 }
 
+import '../styles/ControlPanel.css'
+
 export default function ControlsPanel({ initialNodes, attachPerStep, steps, onChange, onGenerate, onReset, onPause, onResume, speed, onSpeedChange }: Props) {
   return (
-    <div className="controls-panel" style={{ padding: 12, border: '1px solid #eee' }}>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-        <label style={{ width: 140 }}>
-          Initial nodes: {initialNodes}
+    <div className="controls-panel">
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+        <label style={{ minWidth: 140 }}>
+          Initial nodes: <strong>{initialNodes}</strong>
           <input
             type="range"
             min={1}
-            max={50}
+            max={200}
             value={initialNodes}
             onChange={(e) => onChange({ initialNodes: Number(e.target.value) })}
           />
         </label>
 
-        <label style={{ width: 220 }}>
-          Attach per step: {attachPerStep}
+        <label style={{ minWidth: 160 }}>
+          Attach per step: <strong>{attachPerStep}</strong>
           <input
             type="range"
             min={1}
@@ -39,19 +41,20 @@ export default function ControlsPanel({ initialNodes, attachPerStep, steps, onCh
           />
         </label>
 
-        <label style={{ width: 220 }}>
-          Steps: {steps}
-          <input type="range" min={0} max={500} value={steps} onChange={(e) => onChange({ steps: Number(e.target.value) })} />
+        <label style={{ minWidth: 160 }}>
+          Steps: <strong>{steps}</strong>
+          <input type="range" min={0} max={1000} value={steps} onChange={(e) => onChange({ steps: Number(e.target.value) })} />
         </label>
 
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div className="actions" style={{ marginLeft: 'auto' }}>
           <button onClick={onGenerate}>生成</button>
           <button onClick={onReset}>重置</button>
           <button onClick={onPause} title="暂停生成">暂停</button>
           <button onClick={onResume} title="从暂停位置继续">继续</button>
-          <label style={{ marginLeft: 8 }}>
-            速度(ms): {speed}
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>速度(ms):</span>
             <input type="range" min={50} max={2000} value={speed} onChange={(e) => onSpeedChange(Number(e.target.value))} />
+            <strong style={{ minWidth: 48, textAlign: 'right' }}>{speed}</strong>
           </label>
         </div>
       </div>

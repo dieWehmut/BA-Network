@@ -1,0 +1,13 @@
+/* Footer styling */
+.app-footer {
+  background: transparent;
+  color: #cfcfcf;
+}
+
+.app-footer button {
+  background: linear-gradient(180deg,#2a2a2a,#111);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+}

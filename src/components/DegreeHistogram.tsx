@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import '../styles/DegreeHistogram.css'
 import type { Node as BANode, Link as BALink } from '../utils/ba'
 
 type Props = {
@@ -38,8 +39,14 @@ export default function DegreeHistogram({ nodes, links, width = 360, height = 24
   }
 
   return (
-    <div className="degree-histogram" style={{ width, height, border: '1px solid #eee', padding: 6 }}>
+    <div className="degree-histogram" style={{ width, height, padding: 6 }}>
       <svg width={width} height={height}>
+        <defs>
+          <linearGradient id="histGradient" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="#69b3a2" stopOpacity="1" />
+            <stop offset="100%" stopColor="#2b8c7a" stopOpacity="0.9" />
+          </linearGradient>
+        </defs>
         <g transform={`translate(${pad},${pad})`}>
           {degreeCounts.length === 0 ? (
             <text x={innerW / 2} y={innerH / 2} textAnchor="middle" fill="#666">

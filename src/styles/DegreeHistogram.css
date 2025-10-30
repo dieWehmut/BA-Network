@@ -1,0 +1,16 @@
+/* Degree histogram card */
+.degree-histogram {
+  background: rgba(255,255,255,0.02);
+  border-radius: 10px;
+  padding: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  color: inherit;
+}
+
+.degree-histogram svg text {
+  fill: #333;
+}
+
+.degree-histogram rect {
+  fill: url(#histGradient) !important;
+}

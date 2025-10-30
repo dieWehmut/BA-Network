@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import '../styles/Footer.css'
 
 const START = new Date('2025-10-30T15:00:00+08:00')
 
