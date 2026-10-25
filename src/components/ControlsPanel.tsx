@@ -120,6 +120,18 @@ export default function ControlsPanel({
               <strong>{speed}</strong>
             </label>
           </div>
+
+          <ul className="controls-panel__hints">
+            <li>
+              <code>generate</code> rebuild the network with the current settings
+            </li>
+            <li>
+              <code>pause</code> / <code>resume</code> stop adding nodes without losing the layout
+            </li>
+            <li>
+              <code>drag</code> a node to pin it · <code>scroll</code> to zoom the canvas
+            </li>
+          </ul>
         </>
       )}
     </div>

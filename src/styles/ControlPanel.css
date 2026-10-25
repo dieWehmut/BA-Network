@@ -102,6 +102,29 @@
   margin-top: 14px;
 }
 
+/* Terminal-style usage notes fill the panel below the controls. */
+.controls-panel__hints {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 18px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--console-hairline);
+  list-style: none;
+  color: var(--console-dim);
+  font-size: 0.74rem;
+}
+
+.controls-panel__hints li::before {
+  content: '· ';
+  color: var(--console-accent);
+}
+
+.controls-panel__hints code {
+  color: var(--console-muted);
+  font: inherit;
+}
+
 .controls-panel__speed {
   display: flex;
   align-items: center;
