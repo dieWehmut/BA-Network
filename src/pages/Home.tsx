@@ -7,6 +7,7 @@ import ControlsPanel from '../components/ControlsPanel'
 import Footer from '../components/Footer'
 import ConsoleHeader from '../components/ConsoleHeader'
 import ConsoleSection from '../components/ConsoleSection'
+import ConsoleStrip from '../components/ConsoleStrip'
 import { computeNetworkStats } from '../utils/stats'
 import { applyTheme, getTheme, toggleTheme, type Theme } from '../utils/theme'
 import type { Node as BANode, Link as BALink } from '../utils/ba'
@@ -127,6 +128,12 @@ export default function Home() {
           />
         </div>
       </div>
+
+      <ConsoleStrip
+        command="ba-network"
+        tokens={['console', theme, `m=${attachPerStep}`, `speed=${speed}ms`]}
+        hint={`status: ${status}`}
+      />
 
       <Footer repoUrl={REPO_URL} />
     </div>

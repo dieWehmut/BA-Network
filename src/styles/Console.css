@@ -257,6 +257,30 @@
   font-size: 0.72rem;
 }
 
+/* --- breadcrumb tokens ------------------------------------------- */
+
+.console-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 20px 0;
+  color: var(--console-dim);
+  font-size: 0.72rem;
+}
+
+.console-breadcrumb__sep {
+  color: var(--console-dim);
+}
+
+.console-breadcrumb__token {
+  color: var(--console-muted);
+}
+
+.console-breadcrumb__token:hover {
+  color: var(--console-accent);
+}
+
 /* --- footer ------------------------------------------------------- */
 
 .console-footer {
@@ -318,6 +342,10 @@
 
   .console-strip {
     padding: 0 12px;
+  }
+
+  .console-breadcrumb {
+    padding: 6px 12px 0;
   }
 
   .console-strip__meta {
