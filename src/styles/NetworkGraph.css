@@ -58,6 +58,7 @@
   border: 1px solid var(--console-hairline);
   color: var(--console-accent);
   background: var(--console-surface);
+  font-family: var(--console-font);
   font-size: 0.72rem;
   white-space: pre;
   pointer-events: none;

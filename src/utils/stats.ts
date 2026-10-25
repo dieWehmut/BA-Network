@@ -41,6 +41,16 @@ const EMPTY: NetworkStats = {
   topNodes: [],
 }
 
+/**
+ * d3.forceLink rewrites `source`/`target` in place, replacing ids with node
+ * objects, so every consumer has to accept both shapes.
+ */
+type LinkEnd = number | { id: number }
+
+export function endpointId(end: LinkEnd): number {
+  return typeof end === 'number' ? end : end.id
+}
+
 /** Derive every headline number the console dashboard shows from one snapshot. */
 export function computeNetworkStats(nodes: BANode[], links: BALink[]): NetworkStats {
   if (!nodes || nodes.length === 0) return EMPTY
@@ -50,8 +60,10 @@ export function computeNetworkStats(nodes: BANode[], links: BALink[]): NetworkSt
     degreeMap[node.id] = 0
   })
   links.forEach((link) => {
-    degreeMap[link.source] = (degreeMap[link.source] || 0) + 1
-    degreeMap[link.target] = (degreeMap[link.target] || 0) + 1
+    const source = endpointId(link.source as LinkEnd)
+    const target = endpointId(link.target as LinkEnd)
+    degreeMap[source] = (degreeMap[source] || 0) + 1
+    degreeMap[target] = (degreeMap[target] || 0) + 1
   })
 
   const degrees = Object.values(degreeMap)
@@ -103,10 +115,12 @@ export function computeNetworkStats(nodes: BANode[], links: BALink[]): NetworkSt
     adjacency[node.id] = []
   })
   links.forEach((link) => {
-    adjacency[link.source] = adjacency[link.source] || []
-    adjacency[link.target] = adjacency[link.target] || []
-    adjacency[link.source].push(link.target)
-    adjacency[link.target].push(link.source)
+    const source = endpointId(link.source as LinkEnd)
+    const target = endpointId(link.target as LinkEnd)
+    adjacency[source] = adjacency[source] || []
+    adjacency[target] = adjacency[target] || []
+    adjacency[source].push(target)
+    adjacency[target].push(source)
   })
   const visited = new Set<number>()
   let components = 0

@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import generateBASnapshots from '../utils/ba'
-import { computeNetworkStats } from '../utils/stats'
+import { computeNetworkStats, endpointId } from '../utils/stats'
 import type { Node as BANode, Link as BALink } from '../utils/ba'
 import '../styles/NetworkGraph.css'
+
+/** Node radius for a given degree; sqrt so hubs stay proportionate. */
+function nodeRadius(degree: number) {
+  return 3.2 + Math.sqrt(Math.max(0, degree)) * 1.5
+}
 
 type Props = {
   initialNodes: number
@@ -195,8 +200,10 @@ export default function NetworkGraph({
     const golden = Math.PI * (3 - Math.sqrt(5))
     const degreeMapSeed: Record<number, number> = {}
     links.forEach((link) => {
-      degreeMapSeed[link.source] = (degreeMapSeed[link.source] || 0) + 1
-      degreeMapSeed[link.target] = (degreeMapSeed[link.target] || 0) + 1
+      const source = endpointId(link.source as never)
+      const target = endpointId(link.target as never)
+      degreeMapSeed[source] = (degreeMapSeed[source] || 0) + 1
+      degreeMapSeed[target] = (degreeMapSeed[target] || 0) + 1
     })
     ;(nodes as any[]).forEach((node, index) => {
       const ratio = Math.sqrt((index + 0.5) / Math.max(1, nodes.length))
@@ -211,7 +218,7 @@ export default function NetworkGraph({
       .forceSimulation(nodes as any)
       .force('link', d3.forceLink(links as any).id((d: any) => d.id).distance(linkDistance))
       .force('charge', d3.forceManyBody().strength(-linkDistance * 5).distanceMax(linkDistance * 8))
-      .force('collide', d3.forceCollide((d: any) => 8 + (degreeMapSeed[(d as any).id] || 0)))
+      .force('collide', d3.forceCollide((d: any) => nodeRadius(degreeMapSeed[(d as any).id] || 0) + 3))
       .force('x', d3.forceX(width / 2).strength(0.045))
       .force('y', d3.forceY(height / 2).strength(0.045))
     // Give the layout enough ticks to spread out before it freezes.
@@ -227,8 +234,10 @@ export default function NetworkGraph({
 
     const degreeMap: Record<number, number> = {}
     links.forEach((l) => {
-      degreeMap[l.source] = (degreeMap[l.source] || 0) + 1
-      degreeMap[l.target] = (degreeMap[l.target] || 0) + 1
+      const source = endpointId(l.source as never)
+      const target = endpointId(l.target as never)
+      degreeMap[source] = (degreeMap[source] || 0) + 1
+      degreeMap[target] = (degreeMap[target] || 0) + 1
     })
 
     const node = container
@@ -236,7 +245,9 @@ export default function NetworkGraph({
       .selectAll('circle')
       .data(nodes)
       .join('circle')
-      .attr('r', (d: any) => 5 + (degreeMap[(d as any).id] || 0) * 0.9)
+      // sqrt keeps hub radii readable without letting them swallow the canvas.
+      .attr('r', (d: any) => nodeRadius(degreeMap[(d as any).id] || 0))
+      // Hubs (degree > 4) pick up the secondary accent, leaves the primary one.
       .attr('fill', (d: any) =>
         (degreeMap[(d as any).id] && degreeMap[(d as any).id] > 4)
           ? 'var(--site-secondary)'
@@ -271,11 +282,13 @@ export default function NetworkGraph({
         const nid = (d as any).id
         const deg = degreeMap[nid] || 0
         // highlight node
-        d3.select(this).transition().duration(120).attr('r', (5 + deg * 0.9) * 1.6)
+        d3.select(this).transition().duration(120).attr('r', nodeRadius(deg) * 1.5)
         // dim others
   container.selectAll('.nodes circle').filter(function (this: any) { return this !== event.target }).transition().duration(120).style('opacity', 0.25)
         // highlight connected links
-        container.selectAll('.links line').transition().duration(120).style('stroke-opacity', (l: any) => (l.source === nid || l.target === nid ? 1 : 0.08)).style('stroke', (l: any) => (l.source === nid || l.target === nid ? 'var(--console-accent)' : 'currentColor'))
+        container.selectAll('.links line').transition().duration(120)
+          .style('stroke-opacity', (l: any) => (endpointId(l.source) === nid || endpointId(l.target) === nid ? 1 : 0.08))
+          .style('stroke', (l: any) => (endpointId(l.source) === nid || endpointId(l.target) === nid ? 'var(--console-accent)' : 'currentColor'))
         // show tooltip
         if (tooltipRef.current) {
           tooltipRef.current.style.display = 'block'
@@ -299,7 +312,7 @@ export default function NetworkGraph({
       try {
         const nid = (d as any).id
         const deg = degreeMap[nid] || 0
-  d3.select(this).transition().duration(120).attr('r', 5 + deg * 0.9)
+  d3.select(this).transition().duration(120).attr('r', nodeRadius(deg))
         container.selectAll('.nodes circle').transition().duration(120).style('opacity', 1)
         container.selectAll('.links line').transition().duration(120).style('stroke-opacity', 0.34).style('stroke', 'currentColor')
         if (tooltipRef.current) tooltipRef.current.style.display = 'none'
