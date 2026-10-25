@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import '../styles/ControlPanel.css'
+import Footer from './Footer'
 
-// Controls panel: sliders and buttons
+// Controls panel: sliders and buttons, closed by the project meta rows.
 type Props = {
   initialNodes: number
   attachPerStep: number
@@ -13,6 +14,7 @@ type Props = {
   onResume?: () => void
   speed: number
   onSpeedChange: (v: number) => void
+  repoUrl?: string
 }
 
 export default function ControlsPanel({
@@ -26,6 +28,7 @@ export default function ControlsPanel({
   onResume,
   speed,
   onSpeedChange,
+  repoUrl,
 }: Props) {
   const [expanded, setExpanded] = useState<boolean>(true)
 
@@ -120,20 +123,10 @@ export default function ControlsPanel({
               <strong>{speed}</strong>
             </label>
           </div>
-
-          <ul className="controls-panel__hints">
-            <li>
-              <code>generate</code> rebuild the network with the current settings
-            </li>
-            <li>
-              <code>pause</code> / <code>resume</code> stop adding nodes without losing the layout
-            </li>
-            <li>
-              <code>drag</code> a node to pin it · <code>scroll</code> to zoom the canvas
-            </li>
-          </ul>
         </>
       )}
+      {/* Meta rows close the box, so the page needs no footer strip. */}
+      <Footer repoUrl={repoUrl} />
     </div>
   )
 }

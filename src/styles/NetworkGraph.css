@@ -31,24 +31,6 @@
   transition: fill 0.12s ease;
 }
 
-/* Stats overlay: flat console box, accent label colour, no shadow. */
-.network-graph .network-overlay rect {
-  fill: var(--console-surface);
-  stroke: var(--console-hairline);
-  stroke-width: 1;
-}
-
-.network-graph .network-overlay text {
-  fill: var(--console-text);
-  font-family: var(--console-font);
-  font-size: 11.5px;
-  letter-spacing: 0.01em;
-}
-
-.network-graph .network-overlay text.is-accent {
-  fill: var(--console-accent);
-}
-
 /* Node tooltip follows the pointer. */
 .network-tooltip {
   position: absolute;
@@ -65,7 +47,7 @@
 }
 
 @media (max-width: 560px) {
-  .network-graph .network-overlay text {
-    font-size: 10.5px;
+  .network-tooltip {
+    font-size: 0.7rem;
   }
 }

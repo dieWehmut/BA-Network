@@ -1,13 +1,13 @@
-/* Footer — console status strip, no card, no shadow. */
+/* Footer rows — they live inside the bottom-right box, not a page strip. */
 .app-footer {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   width: 100%;
-  padding: 12px 20px 26px;
-  border-top: 1px solid var(--console-border);
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--console-hairline);
   color: var(--console-dim);
-  background: transparent;
   font-size: 0.74rem;
 }
 
@@ -44,10 +44,4 @@
   display: block;
   width: 14px;
   height: 14px;
-}
-
-@media (max-width: 560px) {
-  .app-footer {
-    padding: 12px 12px 22px;
-  }
 }

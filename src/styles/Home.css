@@ -1,5 +1,5 @@
-/* Page-level layout. The console shell owns spacing; this file only keeps
- * the legacy hooks used by the panels alive and handles small screens. */
+/* Page-level layout. The console grid owns spacing; this file only keeps
+ * the canvas heights sane on small screens. */
 .home-root {
   display: flex;
   flex-direction: column;
@@ -7,20 +7,14 @@
   min-height: 100vh;
 }
 
-/* Panels stretch so the graph and the chart fill their console cells. */
-.console-panel .network-graph,
-.console-panel .degree-histogram {
-  flex: 1;
-}
-
-@media (max-width: 1000px) {
-  .console-overview__stage .network-graph {
-    min-height: 300px;
+@media (max-width: 720px) {
+  .console-cell--graph .network-graph {
+    min-height: 320px;
   }
 }
 
 @media (max-width: 560px) {
-  .console-overview__stage .network-graph {
-    min-height: 240px;
+  .console-cell--graph .network-graph {
+    min-height: 260px;
   }
 }

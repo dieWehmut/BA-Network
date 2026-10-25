@@ -1,5 +1,6 @@
 /* ------------------------------------------------------------------
  * Console layout — the terminal-style shell used by dieWehmut.github.io
+ * The page is a 2x2 grid of boxes: graph / dashboard / histogram / controls.
  * ------------------------------------------------------------------ */
 
 .console-shell {
@@ -19,8 +20,9 @@
   align-items: center;
   gap: 16px;
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 20px;
+  border-bottom: 1px solid var(--console-hairline);
   background: var(--console-bg);
 }
 
@@ -31,9 +33,12 @@
   font-size: 0.9rem;
 }
 
-.console-chrome__brand span {
-  color: var(--console-accent);
-  font-weight: 800;
+/* Plain accent square marks the brand; no terminal prompt glyphs. */
+.console-chrome__mark {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background: var(--console-accent);
 }
 
 .console-chrome__brand strong {
@@ -91,27 +96,44 @@
   background: var(--console-selection);
 }
 
-/* --- overview grid ------------------------------------------------ */
+/* --- the four boxes ----------------------------------------------- */
 
-.console-overview {
+.console-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  flex: 1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(360px, 1fr) minmax(320px, 1fr);
   width: 100%;
-  border-bottom: 1px solid var(--console-hairline);
+  min-height: 0;
 }
 
-.console-overview__stage {
-  display: flex;
-  min-width: 0;
-  min-height: 360px;
-  border-right: 1px solid var(--console-hairline);
-}
-
-.console-overview__dashboard {
+.console-cell {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: 18px 20px;
+  min-height: 0;
+  padding: 16px 18px;
+  background: var(--console-bg);
+}
+
+/* Hairlines draw the cross, so every box lines up on the same axis. */
+.console-cell--graph,
+.console-cell--dashboard {
+  border-bottom: 1px solid var(--console-hairline);
+}
+
+.console-cell--graph,
+.console-cell--histogram {
+  border-right: 1px solid var(--console-hairline);
+}
+
+/* The canvas fills its box edge to edge. */
+.console-cell--graph {
+  padding: 0;
+}
+
+.console-cell--graph .network-graph {
+  flex: 1;
 }
 
 /* --- sections ----------------------------------------------------- */
@@ -194,28 +216,7 @@
   color: var(--console-dim);
 }
 
-/* --- main working area -------------------------------------------- */
-
-.console-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  width: 100%;
-  border-top: 1px solid var(--console-hairline);
-  border-bottom: 1px solid var(--console-hairline);
-  background: var(--console-bg);
-}
-
-.console-main > .console-panel + .console-panel {
-  border-left: 1px solid var(--console-hairline);
-}
-
-.console-panel {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  padding: 14px 16px;
-  background: var(--console-bg);
-}
+/* --- box titles --------------------------------------------------- */
 
 .console-panel__title {
   margin-bottom: 8px;
@@ -225,117 +226,27 @@
   letter-spacing: 0.02em;
 }
 
-.console-panel__hint {
-  margin-top: 8px;
-  color: var(--console-dim);
-  font-size: 0.72rem;
-}
-
-/* --- command strip ------------------------------------------------ */
-
-.console-strip {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 34px;
-  padding: 0 20px;
-  border-top: 1px solid var(--console-hairline);
-  background: var(--console-surface);
-  font-size: 0.8rem;
-}
-
-.console-strip__symbol {
-  color: var(--console-accent);
-  font-weight: 700;
-}
-
-.console-strip__label {
-  color: var(--console-text);
-}
-
-.console-strip__meta {
-  margin-left: auto;
-  color: var(--console-muted);
-  font-size: 0.72rem;
-}
-
-/* --- breadcrumb tokens ------------------------------------------- */
-
-.console-breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 20px 0;
-  color: var(--console-dim);
-  font-size: 0.72rem;
-}
-
-.console-breadcrumb__sep {
-  color: var(--console-dim);
-}
-
-.console-breadcrumb__token {
-  color: var(--console-muted);
-}
-
-.console-breadcrumb__token:hover {
-  color: var(--console-accent);
-}
-
-/* --- footer ------------------------------------------------------- */
-
-.console-footer {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px 20px 24px;
-  color: var(--console-dim);
-  font-size: 0.74rem;
-  background: var(--console-bg);
-}
-
-.console-footer__line {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.console-footer__line code {
-  color: var(--console-muted);
-  font: inherit;
-}
-
-.console-footer a {
-  color: var(--console-muted);
-}
-
-.console-footer a:hover {
-  color: var(--console-accent);
-}
-
 /* --- responsive --------------------------------------------------- */
 
-@media (max-width: 1000px) {
-  .console-overview {
+@media (max-width: 720px) {
+  .console-grid {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-auto-rows: minmax(280px, auto);
   }
 
-  .console-overview__stage {
-    min-height: 320px;
+  .console-cell {
     border-right: 0;
+  }
+
+  .console-cell--graph,
+  .console-cell--dashboard,
+  .console-cell--histogram {
     border-bottom: 1px solid var(--console-hairline);
   }
 
-  .console-main > .console-panel + .console-panel {
-    border-left: 0;
-    border-top: 1px solid var(--console-hairline);
-  }
-
-  .console-main {
-    grid-template-columns: minmax(0, 1fr);
+  .console-cell--graph {
+    min-height: 320px;
   }
 }
 
@@ -344,24 +255,11 @@
     padding: 0 12px;
   }
 
-  .console-overview__dashboard,
-  .console-panel {
+  .console-cell {
     padding: 14px 12px;
   }
 
-  .console-strip {
-    padding: 0 12px;
-  }
-
-  .console-breadcrumb {
-    padding: 6px 12px 0;
-  }
-
-  .console-strip__meta {
-    display: none;
-  }
-
-  .console-footer {
-    padding: 12px 12px 20px;
+  .console-cell--graph {
+    padding: 0;
   }
 }

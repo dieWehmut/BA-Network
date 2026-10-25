@@ -6,12 +6,12 @@ type Props = {
   repoUrl: string
 }
 
-/** Console chrome bar: brand marker on the left, controls on the right. */
+/** Page header: brand marker on the left, theme switch on the right. */
 export default function ConsoleHeader({ theme, onToggleTheme, repoUrl }: Props) {
   return (
     <header className="console-chrome">
       <div className="console-chrome__brand">
-        <span aria-hidden="true">&gt;_</span>
+        <span className="console-chrome__mark" aria-hidden="true" />
         <strong>BA-Network</strong>
       </div>
       <div className="console-chrome__actions">

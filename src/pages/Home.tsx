@@ -4,16 +4,18 @@ import '../styles/Home.css'
 import NetworkGraph from '../components/NetworkGraph'
 import DegreeHistogram from '../components/DegreeHistogram'
 import ControlsPanel from '../components/ControlsPanel'
-import Footer from '../components/Footer'
 import ConsoleHeader from '../components/ConsoleHeader'
 import ConsoleSection from '../components/ConsoleSection'
-import ConsoleStrip from '../components/ConsoleStrip'
 import { computeNetworkStats } from '../utils/stats'
 import { applyTheme, getTheme, toggleTheme, type Theme } from '../utils/theme'
 import type { Node as BANode, Link as BALink } from '../utils/ba'
 
 const REPO_URL = 'https://github.com/dieWehmut/BA-Network'
 
+/**
+ * Four aligned boxes: graph / dashboard on top, histogram / controls below.
+ * The meta rows close the bottom-right box, so the page has no footer strip.
+ */
 export default function Home() {
   // increase defaults so graphs are denser by default
   const [initialNodes, setInitialNodes] = useState(10)
@@ -44,8 +46,8 @@ export default function Home() {
         repoUrl={REPO_URL}
       />
 
-      <section className="console-overview" aria-label="Network overview">
-        <div className="console-overview__stage">
+      <main className="console-grid">
+        <section className="console-cell console-cell--graph" aria-label="Network graph">
           <NetworkGraph
             initialNodes={initialNodes}
             attachPerStep={attachPerStep}
@@ -63,11 +65,11 @@ export default function Home() {
               setStatus(nextStatus)
             }}
             width={720}
-            height={360}
+            height={420}
           />
-        </div>
+        </section>
 
-        <div className="console-overview__dashboard">
+        <section className="console-cell console-cell--dashboard" aria-label="Network metrics">
           <ConsoleSection
             title="LINKS"
             rows={[
@@ -96,15 +98,14 @@ export default function Home() {
               { label: 'top', value: stats.topNodes.map((t) => `${t.id}(${t.degree})`).join(', ') || '—' },
             ]}
           />
-        </div>
-      </section>
+        </section>
 
-      <div className="console-main">
-        <div className="console-panel">
+        <section className="console-cell console-cell--histogram" aria-label="Degree distribution">
           <div className="console-panel__title">DEGREE DISTRIBUTION</div>
-          <DegreeHistogram nodes={nodes} links={links} width={720} height={280} />
-        </div>
-        <div className="console-panel">
+          <DegreeHistogram nodes={nodes} links={links} />
+        </section>
+
+        <section className="console-cell console-cell--controls" aria-label="Controls">
           <ControlsPanel
             initialNodes={initialNodes}
             attachPerStep={attachPerStep}
@@ -125,17 +126,10 @@ export default function Home() {
             onResume={() => setResumeSignal((s) => s + 1)}
             speed={speed}
             onSpeedChange={(v) => setSpeed(v)}
+            repoUrl={REPO_URL}
           />
-        </div>
-      </div>
-
-      <ConsoleStrip
-        command="ba-network"
-        tokens={['console', theme, `m=${attachPerStep}`, `speed=${speed}ms`]}
-        hint={`status: ${status}`}
-      />
-
-      <Footer repoUrl={REPO_URL} />
+        </section>
+      </main>
     </div>
   )
 }

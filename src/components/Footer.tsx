@@ -18,6 +18,10 @@ type Props = {
   repoUrl?: string
 }
 
+/**
+ * Project meta rows. They close the bottom-right box, so the page has no
+ * separate footer strip.
+ */
 export default function Footer({ repoUrl = 'https://github.com/dieWehmut/BA-Network' }: Props) {
   const [uptime, setUptime] = useState(() => formatUptime(Date.now() - START.getTime()))
 
@@ -27,7 +31,7 @@ export default function Footer({ repoUrl = 'https://github.com/dieWehmut/BA-Netw
   }, [])
 
   return (
-    <footer className="app-footer">
+    <div className="app-footer">
       <div className="app-footer__line">
         <span className="app-footer__label">uptime</span>
         <span className="app-footer__value">{uptime}</span>
@@ -45,6 +49,6 @@ export default function Footer({ repoUrl = 'https://github.com/dieWehmut/BA-Netw
         </a>
         <span className="app-footer__value">Barabási–Albert preferential attachment</span>
       </div>
-    </footer>
+    </div>
   )
 }

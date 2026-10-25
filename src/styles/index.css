@@ -51,7 +51,6 @@
   --console-selection: color-mix(in srgb, var(--site-accent) 12%, transparent);
   --console-control: color-mix(in srgb, var(--site-accent) 10%, transparent);
   --console-control-strong: color-mix(in srgb, var(--site-accent) 24%, transparent);
-  --console-strip: color-mix(in srgb, var(--site-bg) 88%, var(--site-text));
   --console-content-width: 1120px;
 
   font-family: var(--console-font);

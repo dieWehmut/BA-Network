@@ -8,10 +8,20 @@
   background: var(--console-bg);
 }
 
+/* The plot owns the measured box; the svg is pinned inside it so its viewBox
+ * aspect ratio can never feed back into the size we measure. */
+.degree-histogram__plot {
+  position: relative;
+  flex: 1;
+  min-height: 120px;
+}
+
 .degree-histogram svg {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
   touch-action: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -54,7 +64,7 @@
 
 /* Caption under the chart */
 .degree-histogram__caption {
-  margin-top: 8px;
+  margin-top: 6px;
   color: var(--console-dim);
   font-size: 0.72rem;
 }

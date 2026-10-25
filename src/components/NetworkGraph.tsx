@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import generateBASnapshots from '../utils/ba'
-import { computeNetworkStats, endpointId } from '../utils/stats'
+import { endpointId } from '../utils/stats'
 import type { Node as BANode, Link as BALink } from '../utils/ba'
 import '../styles/NetworkGraph.css'
 
@@ -42,6 +42,22 @@ export default function NetworkGraph({
 }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null)
   const tooltipRef = useRef<HTMLDivElement | null>(null)
+  const wrapRef = useRef<HTMLDivElement | null>(null)
+
+  // The graph box is fluid, so track its real pixel size and draw at that size.
+  // Falling back to the props keeps the first paint (and SSR) sane.
+  const [{ w: boxW, h: boxH }, setBox] = useState({ w: width, h: height })
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver((entries) => {
+      const rect = entries[0]?.contentRect
+      if (!rect) return
+      setBox({ w: Math.max(240, Math.round(rect.width)), h: Math.max(200, Math.round(rect.height)) })
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
   const [nodes, setNodes] = useState<BANode[]>([])
   const [links, setLinks] = useState<BALink[]>([])
   const [isAnimating, setIsAnimating] = useState(false)
@@ -189,14 +205,14 @@ export default function NetworkGraph({
 
     // Scale the layout to the canvas so the network fills the stage instead of
     // clustering in the middle of it.
-    const areaPerNode = (width * height) / Math.max(1, nodes.length)
+    const areaPerNode = (boxW * boxH) / Math.max(1, nodes.length)
     const linkDistance = Math.max(34, Math.min(96, Math.sqrt(areaPerNode) * 0.85))
 
     // Every snapshot arrives with fresh node objects, so seed the layout on an
     // elliptical golden-angle spiral: the simulation then only relaxes locally
     // instead of collapsing everything into the centre before it freezes.
-    const radiusX = width * 0.44
-    const radiusY = height * 0.44
+    const radiusX = boxW * 0.44
+    const radiusY = boxH * 0.44
     const golden = Math.PI * (3 - Math.sqrt(5))
     const degreeMapSeed: Record<number, number> = {}
     links.forEach((link) => {
@@ -208,8 +224,8 @@ export default function NetworkGraph({
     ;(nodes as any[]).forEach((node, index) => {
       const ratio = Math.sqrt((index + 0.5) / Math.max(1, nodes.length))
       const angle = index * golden
-      node.x = width / 2 + Math.cos(angle) * radiusX * ratio
-      node.y = height / 2 + Math.sin(angle) * radiusY * ratio
+      node.x = boxW / 2 + Math.cos(angle) * radiusX * ratio
+      node.y = boxH / 2 + Math.sin(angle) * radiusY * ratio
     })
 
     // forceCenter alone collapses everything into a tight blob, so pull towards
@@ -219,8 +235,8 @@ export default function NetworkGraph({
       .force('link', d3.forceLink(links as any).id((d: any) => d.id).distance(linkDistance))
       .force('charge', d3.forceManyBody().strength(-linkDistance * 5).distanceMax(linkDistance * 8))
       .force('collide', d3.forceCollide((d: any) => nodeRadius(degreeMapSeed[(d as any).id] || 0) + 3))
-      .force('x', d3.forceX(width / 2).strength(0.045))
-      .force('y', d3.forceY(height / 2).strength(0.045))
+      .force('x', d3.forceX(boxW / 2).strength(0.045))
+      .force('y', d3.forceY(boxH / 2).strength(0.045))
     // Give the layout enough ticks to spread out before it freezes.
     simulation.alphaDecay(0.018)
 
@@ -254,7 +270,7 @@ export default function NetworkGraph({
           : 'var(--site-accent)',
       )
       .attr('stroke', 'var(--console-bg)')
-      .attr('stroke-width', 1)
+      .attr('stroke-boxW', 1)
       .attr('class', 'node-circle')
       .call(
         d3
@@ -325,8 +341,8 @@ export default function NetworkGraph({
     simulation.nodes(nodes as any).on('tick', () => {
       // Gently clamp positions so spread-out layouts stay inside the frame.
       for (const n of nodes as any[]) {
-        n.x = Math.max(margin, Math.min(width - margin, n.x))
-        n.y = Math.max(margin, Math.min(height - margin, n.y))
+        n.x = Math.max(margin, Math.min(boxW - margin, n.x))
+        n.y = Math.max(margin, Math.min(boxH - margin, n.y))
       }
       link
         .attr('x1', (d: any) => (d.source as any).x)
@@ -388,68 +404,17 @@ export default function NetworkGraph({
       }
       simulation.stop()
     }
-  }, [nodes, links, isAnimating, width, height])
-
-  // Overlay summary: reuse the shared stats helper so every surface agrees.
-  const overlay = (() => {
-    const stats = computeNetworkStats(nodes, links)
-    const totalSteps = snapshotsRef.current ? snapshotsRef.current.length : 0
-    const currentStep = Math.min(stepIndexRef.current, totalSteps)
-    let status = 'idle'
-    if (currentStep >= totalSteps && totalSteps > 0) status = 'completed'
-    else if (timerRef.current) status = 'generating'
-    else if (isAnimating) status = 'paused'
-    else status = 'stopped'
-
-    const lines = [
-      `nodes ${stats.nodes}  links ${stats.links}`,
-      `step ${currentStep}/${totalSteps}  m=${attachPerStep}`,
-      `avg ${stats.avgDegree}  max ${stats.maxDegree}`,
-      `density ${stats.density.toFixed(4)}  comp ${stats.components}`,
-      `top ${stats.topNodes.map((t) => `${t.id}(${t.degree})`).join(' ') || '—'}`,
-      `status ${status}`,
-    ]
-
-    // Measure in the console font so the box hugs the text.
-    let widthPx = 210
-    try {
-      const ctx = document.createElement('canvas').getContext('2d')
-      if (ctx) {
-        ctx.font = '11.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
-        const widest = lines.reduce((max, line) => Math.max(max, ctx.measureText(line).width), 0)
-        widthPx = Math.max(150, Math.ceil(widest) + 20)
-      }
-    } catch (err) {
-      void err
-    }
-
-    return { lines, width: widthPx, height: 10 + lines.length * 16 }
-  })()
+  }, [nodes, links, isAnimating, boxW, boxH])
 
   return (
-    <div className="network-graph">
+    <div className="network-graph" ref={wrapRef}>
       <svg
         ref={svgRef}
-        viewBox={`0 0 ${width} ${height}`}
+        viewBox={`0 0 ${boxW} ${boxH}`}
         preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Barabási–Albert network graph"
-      >
-        {/* Overlay stays outside the zoom container so it never pans away. */}
-        <g className="network-overlay" transform="translate(8,8)">
-          <rect x={0} y={0} width={overlay.width} height={overlay.height} />
-          {overlay.lines.map((line, index) => (
-            <text
-              key={line}
-              x={8}
-              y={15 + index * 16}
-              className={index === 0 ? 'is-accent' : undefined}
-            >
-              {line}
-            </text>
-          ))}
-        </g>
-      </svg>
+      />
       <div className="network-tooltip" ref={tooltipRef} />
     </div>
   )
