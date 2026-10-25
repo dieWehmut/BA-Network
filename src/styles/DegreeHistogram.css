@@ -5,6 +5,8 @@
   flex: 1;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   background: var(--console-bg);
 }
 
@@ -13,7 +15,7 @@
 .degree-histogram__plot {
   position: relative;
   flex: 1;
-  min-height: 120px;
+  min-height: 0;
 }
 
 .degree-histogram svg {
@@ -72,11 +74,12 @@
 /* Inline summary row above the plot. */
 .degree-histogram .hist-info {
   display: flex;
+  flex: 0 0 auto;
   flex-wrap: wrap;
-  gap: 4px 14px;
-  margin-bottom: 6px;
+  gap: 3px 12px;
+  margin-bottom: 5px;
   color: var(--console-muted);
-  font-size: 0.72rem;
+  font-size: 0.71rem;
 }
 
 .degree-histogram .hist-info__item strong {

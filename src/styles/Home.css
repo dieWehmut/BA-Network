@@ -1,5 +1,5 @@
 /* Page-level layout. The console grid owns spacing; this file only keeps
- * the canvas heights sane on small screens. */
+ * the canvas sane on the stacked small-screen layout. */
 .home-root {
   display: flex;
   flex-direction: column;
@@ -9,7 +9,7 @@
 
 @media (max-width: 720px) {
   .console-cell--graph .network-graph {
-    min-height: 320px;
+    min-height: 300px;
   }
 }
 

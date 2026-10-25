@@ -17,13 +17,15 @@ The page is exactly **four aligned boxes** in a 2×2 grid:
 
 | | left | right |
 | --- | --- | --- |
-| top | network graph | dashboard (LINKS / CONTENT / RUNTIME) |
-| bottom | degree distribution | controls + project meta rows |
+| top | network graph | degree distribution |
+| bottom | dashboard (LINKS / CONTENT / RUNTIME) | controls + project meta rows |
 
-The project meta rows (uptime, copyright, GitHub) close the bottom-right box, so
-there is no separate footer strip. Both charts measure their own box with a
-`ResizeObserver`, which keeps the type at real pixel sizes instead of scaling it
-with the viewBox. Below 720px the grid stacks into a single column.
+The grid fills the viewport exactly (`100dvh`, `minmax(0, 1fr)` rows), so the
+page never needs a scrollbar on desktop. The project meta rows (uptime,
+copyright, GitHub) close the bottom-right box, so there is no separate footer
+strip. Both charts measure their own box with a `ResizeObserver`, which keeps the
+type at real pixel sizes instead of scaling it with the viewBox. Below 720px the
+grid stacks into a single scrolling column.
 
 Design tokens live in `src/styles/index.css` (`--site-*` and `--console-*`).
 Dark is the default palette; the header button switches to the light one and the

@@ -13,7 +13,8 @@ import type { Node as BANode, Link as BALink } from '../utils/ba'
 const REPO_URL = 'https://github.com/dieWehmut/BA-Network'
 
 /**
- * Four aligned boxes: graph / dashboard on top, histogram / controls below.
+ * Four aligned boxes that fit one viewport without scrolling:
+ * graph / histogram on top, dashboard / controls below.
  * The meta rows close the bottom-right box, so the page has no footer strip.
  */
 export default function Home() {
@@ -64,9 +65,12 @@ export default function Home() {
               setStep(Math.min(currentStep, totalSteps))
               setStatus(nextStatus)
             }}
-            width={720}
-            height={420}
           />
+        </section>
+
+        <section className="console-cell console-cell--histogram" aria-label="Degree distribution">
+          <div className="console-panel__title">DEGREE DISTRIBUTION</div>
+          <DegreeHistogram nodes={nodes} links={links} />
         </section>
 
         <section className="console-cell console-cell--dashboard" aria-label="Network metrics">
@@ -98,11 +102,6 @@ export default function Home() {
               { label: 'top', value: stats.topNodes.map((t) => `${t.id}(${t.degree})`).join(', ') || '—' },
             ]}
           />
-        </section>
-
-        <section className="console-cell console-cell--histogram" aria-label="Degree distribution">
-          <div className="console-panel__title">DEGREE DISTRIBUTION</div>
-          <DegreeHistogram nodes={nodes} links={links} />
         </section>
 
         <section className="console-cell console-cell--controls" aria-label="Controls">

@@ -4,10 +4,16 @@
   display: flex;
   flex: 1;
   min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   background: var(--console-bg);
 }
 
+/* Pin the svg inside the box: with height:100% against an auto-height parent it
+ * would fall back to the viewBox aspect ratio and overflow the cell. */
 .network-graph svg {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
