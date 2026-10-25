@@ -182,13 +182,40 @@ export default function NetworkGraph({
       container.select('.nodes').selectAll('*').remove()
     }
 
+    // Scale the layout to the canvas so the network fills the stage instead of
+    // clustering in the middle of it.
+    const areaPerNode = (width * height) / Math.max(1, nodes.length)
+    const linkDistance = Math.max(34, Math.min(96, Math.sqrt(areaPerNode) * 0.85))
+
+    // Every snapshot arrives with fresh node objects, so seed the layout on an
+    // elliptical golden-angle spiral: the simulation then only relaxes locally
+    // instead of collapsing everything into the centre before it freezes.
+    const radiusX = width * 0.44
+    const radiusY = height * 0.44
+    const golden = Math.PI * (3 - Math.sqrt(5))
+    const degreeMapSeed: Record<number, number> = {}
+    links.forEach((link) => {
+      degreeMapSeed[link.source] = (degreeMapSeed[link.source] || 0) + 1
+      degreeMapSeed[link.target] = (degreeMapSeed[link.target] || 0) + 1
+    })
+    ;(nodes as any[]).forEach((node, index) => {
+      const ratio = Math.sqrt((index + 0.5) / Math.max(1, nodes.length))
+      const angle = index * golden
+      node.x = width / 2 + Math.cos(angle) * radiusX * ratio
+      node.y = height / 2 + Math.sin(angle) * radiusY * ratio
+    })
+
+    // forceCenter alone collapses everything into a tight blob, so pull towards
+    // the middle only weakly and let repulsion spread the network to the frame.
     const simulation = d3
       .forceSimulation(nodes as any)
-      .force('link', d3.forceLink(links as any).id((d: any) => d.id).distance(40))
-      .force('charge', d3.forceManyBody().strength(-60))
-      .force('center', d3.forceCenter(width / 2, height / 2))
-    // make layout settle faster
-    simulation.alphaDecay(0.06)
+      .force('link', d3.forceLink(links as any).id((d: any) => d.id).distance(linkDistance))
+      .force('charge', d3.forceManyBody().strength(-linkDistance * 5).distanceMax(linkDistance * 8))
+      .force('collide', d3.forceCollide((d: any) => 8 + (degreeMapSeed[(d as any).id] || 0)))
+      .force('x', d3.forceX(width / 2).strength(0.045))
+      .force('y', d3.forceY(height / 2).strength(0.045))
+    // Give the layout enough ticks to spread out before it freezes.
+    simulation.alphaDecay(0.018)
 
     const link = container
       .select('.links')
@@ -209,7 +236,7 @@ export default function NetworkGraph({
       .selectAll('circle')
       .data(nodes)
       .join('circle')
-      .attr('r', (d: any) => 4 + (degreeMap[(d as any).id] || 0))
+      .attr('r', (d: any) => 5 + (degreeMap[(d as any).id] || 0) * 0.9)
       .attr('fill', (d: any) =>
         (degreeMap[(d as any).id] && degreeMap[(d as any).id] > 4)
           ? 'var(--site-secondary)'
@@ -244,7 +271,7 @@ export default function NetworkGraph({
         const nid = (d as any).id
         const deg = degreeMap[nid] || 0
         // highlight node
-        d3.select(this).transition().duration(120).attr('r', (4 + deg) * 1.6)
+        d3.select(this).transition().duration(120).attr('r', (5 + deg * 0.9) * 1.6)
         // dim others
   container.selectAll('.nodes circle').filter(function (this: any) { return this !== event.target }).transition().duration(120).style('opacity', 0.25)
         // highlight connected links
@@ -272,7 +299,7 @@ export default function NetworkGraph({
       try {
         const nid = (d as any).id
         const deg = degreeMap[nid] || 0
-  d3.select(this).transition().duration(120).attr('r', 4 + deg)
+  d3.select(this).transition().duration(120).attr('r', 5 + deg * 0.9)
         container.selectAll('.nodes circle').transition().duration(120).style('opacity', 1)
         container.selectAll('.links line').transition().duration(120).style('stroke-opacity', 0.34).style('stroke', 'currentColor')
         if (tooltipRef.current) tooltipRef.current.style.display = 'none'
@@ -281,7 +308,13 @@ export default function NetworkGraph({
 
   node.append('title').text((d: any) => `ID: ${(d as any).id}\ndeg: ${degreeMap[(d as any).id] || 0}`)
 
+    const margin = 26
     simulation.nodes(nodes as any).on('tick', () => {
+      // Gently clamp positions so spread-out layouts stay inside the frame.
+      for (const n of nodes as any[]) {
+        n.x = Math.max(margin, Math.min(width - margin, n.x))
+        n.y = Math.max(margin, Math.min(height - margin, n.y))
+      }
       link
         .attr('x1', (d: any) => (d.source as any).x)
         .attr('y1', (d: any) => (d.source as any).y)
