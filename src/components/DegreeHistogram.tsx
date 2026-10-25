@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import '../styles/DegreeHistogram.css'
 import { computeNetworkStats } from '../utils/stats'
@@ -16,20 +16,27 @@ type Props = {
  */
 export default function DegreeHistogram({ nodes, links }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null)
-  const wrapRef = useRef<HTMLDivElement | null>(null)
-  const plotRef = useRef<HTMLDivElement | null>(null)
-
   const [box, setBox] = useState({ w: 640, h: 240 })
-  useEffect(() => {
-    const el = plotRef.current
+
+  // The plot only exists once there is data, so observe it through a callback
+  // ref: an effect with [] deps would attach while the empty state is rendered
+  // and then never fire again, leaving the viewBox at its default size.
+  const observerRef = useRef<ResizeObserver | null>(null)
+  const plotRef = useCallback((el: HTMLDivElement | null) => {
+    observerRef.current?.disconnect()
+    observerRef.current = null
     if (!el || typeof ResizeObserver === 'undefined') return
     const observer = new ResizeObserver((entries) => {
       const rect = entries[0]?.contentRect
       if (!rect) return
-      setBox({ w: Math.max(240, Math.round(rect.width)), h: Math.max(160, Math.round(rect.height)) })
+      setBox((prev) => {
+        const w = Math.max(240, Math.round(rect.width))
+        const h = Math.max(160, Math.round(rect.height))
+        return prev.w === w && prev.h === h ? prev : { w, h }
+      })
     })
     observer.observe(el)
-    return () => observer.disconnect()
+    observerRef.current = observer
   }, [])
 
   const stats = useMemo(() => computeNetworkStats(nodes, links), [nodes, links])
@@ -59,7 +66,8 @@ export default function DegreeHistogram({ nodes, links }: Props) {
 
   const width = box.w
   const height = box.h
-  const padX = 18
+  // Bars span the whole plot width so no dead space is left on either side.
+  const padX = 0
   const padTop = 16
   const bottomLabelSpace = 24
   const innerW = Math.max(40, width - padX * 2)
@@ -67,7 +75,7 @@ export default function DegreeHistogram({ nodes, links }: Props) {
 
   if (!nodes || nodes.length === 0) {
     return (
-      <div className="degree-histogram" ref={wrapRef}>
+      <div className="degree-histogram">
         <div className="degree-histogram__empty">No data — press Generate to build a network</div>
       </div>
     )
@@ -77,7 +85,7 @@ export default function DegreeHistogram({ nodes, links }: Props) {
   const labelEvery = Math.max(1, Math.ceil(degreeCounts.length / Math.max(3, Math.floor(innerW / 42))))
 
   return (
-    <div className="degree-histogram" ref={wrapRef}>
+    <div className="degree-histogram">
       {/* Summary sits above the plot so it never covers the bars. */}
       <div className="hist-info" aria-hidden>
         <span className="hist-info__item">
@@ -124,7 +132,8 @@ export default function DegreeHistogram({ nodes, links }: Props) {
                 const y = innerH - barH
                 return (
                   <g key={bucket.degree}>
-                    <rect x={x + 1} y={y} width={Math.max(2, barW - 2)} height={barH}>
+                    {/* 1px gutter keeps neighbouring bars readable at any width. */}
+                    <rect x={x + 0.5} y={y} width={Math.max(2, barW - 1)} height={barH}>
                       <title>{`degree ${bucket.degree}: ${bucket.count}`}</title>
                     </rect>
                     <text
