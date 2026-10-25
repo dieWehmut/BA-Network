@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import '../styles/ControlPanel.css'
 
 // Controls panel: sliders and buttons
 type Props = {
@@ -14,10 +15,20 @@ type Props = {
   onSpeedChange: (v: number) => void
 }
 
-import '../styles/ControlPanel.css'
-
-export default function ControlsPanel({ initialNodes, attachPerStep, steps, onChange, onGenerate, onReset, onPause, onResume, speed, onSpeedChange }: Props) {
+export default function ControlsPanel({
+  initialNodes,
+  attachPerStep,
+  steps,
+  onChange,
+  onGenerate,
+  onReset,
+  onPause,
+  onResume,
+  speed,
+  onSpeedChange,
+}: Props) {
   const [expanded, setExpanded] = useState<boolean>(true)
+
   // collapse controls by default on small screens
   useEffect(() => {
     function onResize() {
@@ -30,51 +41,86 @@ export default function ControlsPanel({ initialNodes, attachPerStep, steps, onCh
 
   return (
     <div className="controls-panel">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+      <div className="controls-panel__head">
         <strong>Controls</strong>
-        <button onClick={() => setExpanded((s) => !s)} style={{ marginLeft: 'auto' }}>{expanded ? 'Hide' : 'Show'}</button>
+        <button
+          className="console-button console-button--ghost"
+          type="button"
+          onClick={() => setExpanded((s) => !s)}
+          aria-expanded={expanded}
+        >
+          {expanded ? 'hide' : 'show'}
+        </button>
       </div>
       {expanded && (
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-        <label style={{ minWidth: 140 }}>
-          Initial nodes: <strong>{initialNodes}</strong>
-          <input
-            type="range"
-            min={1}
-            max={200}
-            value={initialNodes}
-            onChange={(e) => onChange({ initialNodes: Number(e.target.value) })}
-          />
-        </label>
+        <>
+          <div className="controls-panel__body">
+            <label className="control-field">
+              <span className="control-field__label">
+                Initial nodes <strong>{initialNodes}</strong>
+              </span>
+              <input
+                type="range"
+                min={1}
+                max={200}
+                value={initialNodes}
+                onChange={(e) => onChange({ initialNodes: Number(e.target.value) })}
+              />
+            </label>
 
-        <label style={{ minWidth: 160 }}>
-          Attach per step: <strong>{attachPerStep}</strong>
-          <input
-            type="range"
-            min={1}
-            max={10}
-            value={attachPerStep}
-            onChange={(e) => onChange({ attachPerStep: Number(e.target.value) })}
-          />
-        </label>
+            <label className="control-field">
+              <span className="control-field__label">
+                Attach per step <strong>{attachPerStep}</strong>
+              </span>
+              <input
+                type="range"
+                min={1}
+                max={10}
+                value={attachPerStep}
+                onChange={(e) => onChange({ attachPerStep: Number(e.target.value) })}
+              />
+            </label>
 
-        <label style={{ minWidth: 160 }}>
-          Steps: <strong>{steps}</strong>
-          <input type="range" min={0} max={1000} value={steps} onChange={(e) => onChange({ steps: Number(e.target.value) })} />
-        </label>
+            <label className="control-field">
+              <span className="control-field__label">
+                Steps <strong>{steps}</strong>
+              </span>
+              <input
+                type="range"
+                min={0}
+                max={1000}
+                value={steps}
+                onChange={(e) => onChange({ steps: Number(e.target.value) })}
+              />
+            </label>
+          </div>
 
-        <div className="actions" style={{ marginLeft: 'auto' }}>
-          <button onClick={onGenerate}>Generate</button>
-          <button onClick={onReset}>Reset</button>
-          <button onClick={onPause} title="Pause generation">Pause</button>
-          <button onClick={onResume} title="Resume from paused position">Resume</button>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span>Speed (ms):</span>
-            <input type="range" min={50} max={2000} value={speed} onChange={(e) => onSpeedChange(Number(e.target.value))} />
-            <strong style={{ minWidth: 48, textAlign: 'right' }}>{speed}</strong>
-          </label>
-        </div>
-        </div>
+          <div className="controls-panel__actions">
+            <button className="console-button" type="button" onClick={onGenerate}>
+              generate
+            </button>
+            <button className="console-button console-button--ghost" type="button" onClick={onReset}>
+              reset
+            </button>
+            <button className="console-button console-button--ghost" type="button" onClick={onPause} title="Pause generation">
+              pause
+            </button>
+            <button className="console-button console-button--ghost" type="button" onClick={onResume} title="Resume from paused position">
+              resume
+            </button>
+            <label className="controls-panel__speed">
+              <span>Speed (ms)</span>
+              <input
+                type="range"
+                min={50}
+                max={2000}
+                value={speed}
+                onChange={(e) => onSpeedChange(Number(e.target.value))}
+              />
+              <strong>{speed}</strong>
+            </label>
+          </div>
+        </>
       )}
     </div>
   )

@@ -1,13 +1,53 @@
-/* Footer styling */
+/* Footer — console status strip, no card, no shadow. */
 .app-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 12px 20px 26px;
+  border-top: 1px solid var(--console-border);
+  color: var(--console-dim);
   background: transparent;
-  color: #cfcfcf;
+  font-size: 0.74rem;
 }
 
-.app-footer button {
-  background: linear-gradient(180deg,#2a2a2a,#111);
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
+.app-footer__line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-footer__label {
+  color: var(--console-muted);
+}
+
+.app-footer__value {
+  color: var(--console-text);
+}
+
+.app-footer a {
+  color: var(--console-muted);
+}
+
+.app-footer a:hover,
+.app-footer a:focus-visible {
+  color: var(--console-accent);
+  outline: none;
+}
+
+.app-footer .console-button {
+  gap: 7px;
+}
+
+.app-footer .console-button svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 560px) {
+  .app-footer {
+    padding: 12px 12px 22px;
+  }
 }

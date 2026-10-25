@@ -1,60 +1,26 @@
-/* Page-level layout for Home */
+/* Page-level layout. The console shell owns spacing; this file only keeps
+ * the legacy hooks used by the panels alive and handles small screens. */
 .home-root {
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  width: 100%;
+  min-height: 100vh;
 }
 
-.home-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+/* Panels stretch so the graph and the chart fill their console cells. */
+.console-panel .network-graph,
+.console-panel .degree-histogram {
+  flex: 1;
 }
 
-.home-header h2 {
-  margin: 0;
-  font-size: 1.6rem;
-  color: inherit;
-}
-
-.home-main {
-  display: grid;
-  /* make sidebar (histogram) wider and main area slightly narrower */
-  grid-template-columns: 1fr 420px;
-  gap: 16px;
-  align-items: start;
-}
-
-.home-controls {
-  margin-top: 8px;
-}
-
-@media (max-width: 980px) {
-  .home-main {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .home-root {
-    padding: 0 8px;
-  }
-  .home-header h2 {
-    font-size: 1.25rem;
+@media (max-width: 1000px) {
+  .console-overview__stage .network-graph {
+    min-height: 300px;
   }
 }
 
-/* Mobile specific tweaks */
-@media (max-width: 520px) {
-  .home-main {
-    grid-template-columns: 1fr;
-  }
-  .home-main > * {
-    width: 100%;
-  }
-  .home-controls {
-    margin-top: 6px;
+@media (max-width: 560px) {
+  .console-overview__stage .network-graph {
+    min-height: 240px;
   }
 }

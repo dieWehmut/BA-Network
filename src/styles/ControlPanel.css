@@ -1,58 +1,142 @@
-/* Controls panel styling */
+/* Controls — console form row with square controls. */
 .controls-panel {
-  background: rgba(255,255,255,0.02);
-  border-radius: 10px;
-  padding: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-  color: inherit;
-}
-
-.controls-panel label {
-  display: inline-flex;
-  flex-direction: column;
-  font-size: 0.9rem;
-  color: #cfcfcf;
-}
-
-.controls-panel input[type="range"] {
-  width: 100%;
-  margin-top: 6px;
-}
-
-.controls-panel button {
-  background: linear-gradient(180deg,#2a2a2a,#1a1a1a);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.04);
-}
-
-.controls-panel .actions {
   display: flex;
-  gap: 8px;
-  align-items: center;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--console-text);
 }
 
-@media (max-width: 680px) {
-  .controls-panel {
-    padding: 10px;
-  }
-  .controls-panel label {
-    min-width: 120px;
-    font-size: 0.9rem;
-  }
-  .controls-panel .actions {
+.controls-panel__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.controls-panel__head strong {
+  color: var(--console-accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.controls-panel__head .console-button {
+  margin-left: auto;
+}
+
+.controls-panel__body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px 18px;
+  align-items: end;
+}
+
+.control-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.control-field__label {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--console-muted);
+  font-size: 0.76rem;
+}
+
+.control-field__label strong {
+  color: var(--console-text);
+  font-weight: 700;
+}
+
+/* Range inputs: hairline track, square accent thumb. */
+.control-field input[type='range'] {
+  width: 100%;
+  height: 16px;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.control-field input[type='range']::-webkit-slider-runnable-track {
+  height: 2px;
+  background: var(--console-border-strong);
+}
+
+.control-field input[type='range']::-webkit-slider-thumb {
+  width: 10px;
+  height: 14px;
+  margin-top: -6px;
+  border: 0;
+  border-radius: 0;
+  background: var(--console-accent);
+  appearance: none;
+}
+
+.control-field input[type='range']::-moz-range-track {
+  height: 2px;
+  background: var(--console-border-strong);
+}
+
+.control-field input[type='range']::-moz-range-thumb {
+  width: 10px;
+  height: 14px;
+  border: 0;
+  border-radius: 0;
+  background: var(--console-accent);
+}
+
+.control-field input[type='range']:focus-visible::-webkit-slider-thumb {
+  background: var(--console-text);
+}
+
+.controls-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.controls-panel__speed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  color: var(--console-muted);
+  font-size: 0.76rem;
+}
+
+.controls-panel__speed input[type='range'] {
+  width: 110px;
+}
+
+.controls-panel__speed strong {
+  min-width: 46px;
+  color: var(--console-text);
+  font-weight: 700;
+  text-align: right;
+}
+
+@media (max-width: 700px) {
+  .controls-panel__actions {
     flex-direction: column;
     align-items: stretch;
   }
-  .controls-panel .actions button {
+
+  .controls-panel__actions .console-button {
     width: 100%;
   }
-  .controls-panel label > input[type="range"] {
-    margin-top: 8px;
-  }
-}
 
-@media (max-width: 420px) {
-  .controls-panel label {
-    font-size: 0.85rem;
+  .controls-panel__speed {
+    margin-left: 0;
+  }
+
+  .controls-panel__speed input[type='range'] {
+    flex: 1;
   }
 }
