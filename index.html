@@ -1,13 +1,26 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-cn" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="https://github.com/dieWehmut.png" />
+    <link rel="icon" type="image/png" href="https://github.com/dieWehmut.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="BA-Network — an interactive Barabási–Albert preferential-attachment network visualisation with live degree distribution."
     />
+    <meta name="theme-color" content="#000000" />
+    <script>
+      // Apply the saved theme before first paint so the console never flashes.
+      (function () {
+        var theme = 'dark';
+        try {
+          var saved = localStorage.getItem('theme');
+          if (saved === 'light' || saved === 'dark') theme = saved;
+        } catch (error) {}
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
     <title>BA-Network</title>
   </head>
   <body>

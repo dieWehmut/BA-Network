@@ -1,98 +1,170 @@
+/* ------------------------------------------------------------------
+ * Design tokens — aligned with dieWehmut.github.io
+ * Pure black canvas, monospace terminal chrome, green accent, square
+ * corners, hairline borders and no shadows anywhere.
+ * ------------------------------------------------------------------ */
+:root,
+[data-theme='dark'] {
+  --site-bg: #000000;
+  --site-sidebar-bg: rgba(10, 10, 10, 0.96);
+  --site-text: #e0e0e0;
+  --site-muted: #999999;
+  --site-border: rgba(255, 255, 255, 0.1);
+  --site-accent: #1fc41f;
+  --site-accent-rgb: 31 196 31;
+  --site-secondary: #9b3dff;
+  --site-tertiary: #ff69b4;
+  --site-tag-color: rgba(190, 190, 190, 0.82);
+
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --site-bg: #ffffff;
+  --site-sidebar-bg: rgba(255, 255, 255, 0.96);
+  --site-text: #000000;
+  --site-muted: #444444;
+  --site-border: rgba(0, 0, 0, 0.1);
+  --site-accent: #1a9e1a;
+  --site-accent-rgb: 26 158 26;
+  --site-secondary: #8f35ff;
+  --site-tertiary: #e64a97;
+  --site-tag-color: rgba(88, 62, 126, 0.92);
+
+  color-scheme: light;
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --console-font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  --console-bg: var(--site-bg);
+  --console-surface: color-mix(in srgb, var(--site-bg) 90%, var(--site-text));
+  --console-text: var(--site-text);
+  --console-muted: color-mix(in srgb, var(--site-text) 70%, transparent);
+  --console-dim: color-mix(in srgb, var(--site-text) 44%, transparent);
+  --console-accent: var(--site-accent);
+  --console-border: var(--site-border);
+  --console-border-strong: color-mix(in srgb, var(--site-text) 22%, transparent);
+  --console-selection: color-mix(in srgb, var(--site-accent) 12%, transparent);
+  --console-control: color-mix(in srgb, var(--site-accent) 10%, transparent);
+  --console-control-strong: color-mix(in srgb, var(--site-accent) 24%, transparent);
+  --console-strip: color-mix(in srgb, var(--site-bg) 88%, var(--site-text));
+  --console-content-width: 1120px;
+
+  font-family: var(--console-font);
+  font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
-  --bg: #242424;
-  --card: rgba(255,255,255,0.02);
-  --muted: #cfcfcf;
-  --accent: #646cff;
-  --accent-2: #69b3a2;
-  --panel-radius: 10px;
-  --page-pad: 1rem;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.92);
-  background-color: var(--bg);
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
-a:hover {
-  color: #535bf2;
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--site-accent) 58%, transparent)
+    color-mix(in srgb, var(--site-accent) 10%, transparent);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--site-accent) 10%, transparent);
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid color-mix(in srgb, var(--site-bg) 82%, transparent);
+  background: color-mix(in srgb, var(--site-accent) 72%, var(--site-bg));
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--site-accent);
+}
+
+html,
+body {
+  min-height: 100%;
 }
 
 body {
   margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-width: 320px;
+  overflow-x: hidden;
+  color: var(--site-text);
+  background: var(--site-bg);
+  font-family: var(--console-font);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+#root {
   min-height: 100vh;
-  padding: 2rem 1rem;
-  box-sizing: border-box;
+  background: var(--site-bg);
 }
 
-/* A subtle page background texture/color */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));
-  pointer-events: none;
+::selection {
+  color: var(--site-bg);
+  background: var(--site-accent);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  color: var(--site-text);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
+}
+
+a:hover,
+a:focus-visible {
+  color: var(--console-accent);
+  outline: none;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  font: inherit;
+  color: inherit;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+:focus-visible {
+  outline: 1px solid var(--console-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
   }
 }
 
-/* small-screen global adjustments */
 @media (max-width: 520px) {
   :root {
     font-size: 14px;
-  }
-  button {
-    padding: 0.5em 0.9em;
-    font-size: 0.95rem;
   }
 }
