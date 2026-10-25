@@ -59,35 +59,25 @@
   font-size: 0.72rem;
 }
 
-/* Floating stat box (top-left), matching the console overlay style. */
-.degree-histogram .hist-info-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;
-  min-width: 132px;
-  padding: 6px 9px;
-  border: 1px solid var(--console-border-strong);
-  color: var(--console-text);
-  background: color-mix(in srgb, var(--site-bg) 88%, var(--site-text));
+/* Inline summary row above the plot. */
+.degree-histogram .hist-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-bottom: 6px;
+  color: var(--console-muted);
   font-size: 0.72rem;
-  pointer-events: none;
 }
 
-.degree-histogram .hist-info-title {
-  margin-bottom: 3px;
+.degree-histogram .hist-info__item strong {
+  margin-left: 4px;
   color: var(--console-accent);
   font-weight: 700;
 }
 
-.degree-histogram .hist-info-line {
-  color: var(--console-muted);
-  line-height: 1.45;
-}
-
 @media (max-width: 560px) {
-  .degree-histogram .hist-info-overlay {
-    min-width: 116px;
+  .degree-histogram .hist-info {
+    gap: 3px 10px;
     font-size: 0.68rem;
   }
 }

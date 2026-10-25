@@ -43,8 +43,10 @@
   --console-muted: color-mix(in srgb, var(--site-text) 70%, transparent);
   --console-dim: color-mix(in srgb, var(--site-text) 44%, transparent);
   --console-accent: var(--site-accent);
-  --console-border: var(--site-border);
-  --console-border-strong: color-mix(in srgb, var(--site-text) 22%, transparent);
+  /* The console draws no strokes: separation comes from surface fills. */
+  --console-border: transparent;
+  --console-border-strong: transparent;
+  --console-hairline: color-mix(in srgb, var(--site-text) 10%, transparent);
   --console-selection: color-mix(in srgb, var(--site-accent) 12%, transparent);
   --console-control: color-mix(in srgb, var(--site-accent) 10%, transparent);
   --console-control-strong: color-mix(in srgb, var(--site-accent) 24%, transparent);

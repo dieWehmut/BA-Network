@@ -21,7 +21,6 @@
   width: 100%;
   min-height: 40px;
   padding: 0 20px;
-  border-bottom: 1px solid var(--console-border);
   background: var(--console-bg);
 }
 
@@ -98,14 +97,14 @@
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   width: 100%;
-  border-bottom: 1px solid var(--console-border);
+  border-bottom: 1px solid var(--console-hairline);
 }
 
 .console-overview__stage {
   display: flex;
   min-width: 0;
   min-height: 360px;
-  border-right: 1px solid var(--console-border);
+  border-right: 1px solid var(--console-hairline);
 }
 
 .console-overview__dashboard {
@@ -200,10 +199,14 @@
 .console-main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 1px;
   width: 100%;
-  border-bottom: 1px solid var(--console-border);
-  background: var(--console-border);
+  border-top: 1px solid var(--console-hairline);
+  border-bottom: 1px solid var(--console-hairline);
+  background: var(--console-bg);
+}
+
+.console-main > .console-panel + .console-panel {
+  border-left: 1px solid var(--console-hairline);
 }
 
 .console-panel {
@@ -237,8 +240,8 @@
   width: 100%;
   min-height: 34px;
   padding: 0 20px;
-  border-bottom: 1px solid var(--console-border);
-  background: var(--console-strip);
+  border-top: 1px solid var(--console-hairline);
+  background: var(--console-surface);
   font-size: 0.8rem;
 }
 
@@ -290,6 +293,7 @@
   padding: 12px 20px 24px;
   color: var(--console-dim);
   font-size: 0.74rem;
+  background: var(--console-bg);
 }
 
 .console-footer__line {
@@ -322,7 +326,12 @@
   .console-overview__stage {
     min-height: 320px;
     border-right: 0;
-    border-bottom: 1px solid var(--console-border);
+    border-bottom: 1px solid var(--console-hairline);
+  }
+
+  .console-main > .console-panel + .console-panel {
+    border-left: 0;
+    border-top: 1px solid var(--console-hairline);
   }
 
   .console-main {

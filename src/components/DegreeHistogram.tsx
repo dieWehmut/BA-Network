@@ -56,15 +56,29 @@ export default function DegreeHistogram({ nodes, links, width = 720, height = 26
 
   return (
     <div className="degree-histogram">
-      <div className="hist-info-overlay" aria-hidden>
-        <div className="hist-info-title">Nodes: {totalNodes}</div>
-        <div className="hist-info-line">Links: {totalLinks}</div>
-        <div className="hist-info-line">
-          Max deg: {stats.maxDegree} Avg: {stats.avgDegree}
-        </div>
-        <div className="hist-info-line">
-          Mode: {stats.modeDegree} Median: {stats.medianDegree} ≥5: {stats.pctGE5}%
-        </div>
+      {/* Summary sits above the plot so it never covers the bars. */}
+      <div className="hist-info" aria-hidden>
+        <span className="hist-info__item">
+          nodes <strong>{totalNodes}</strong>
+        </span>
+        <span className="hist-info__item">
+          links <strong>{totalLinks}</strong>
+        </span>
+        <span className="hist-info__item">
+          max <strong>{stats.maxDegree}</strong>
+        </span>
+        <span className="hist-info__item">
+          avg <strong>{stats.avgDegree}</strong>
+        </span>
+        <span className="hist-info__item">
+          mode <strong>{stats.modeDegree}</strong>
+        </span>
+        <span className="hist-info__item">
+          median <strong>{stats.medianDegree}</strong>
+        </span>
+        <span className="hist-info__item">
+          ≥5 <strong>{stats.pctGE5}%</strong>
+        </span>
       </div>
       <svg
         ref={svgRef}

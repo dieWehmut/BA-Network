@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import generateBASnapshots from '../utils/ba'
+import { computeNetworkStats } from '../utils/stats'
 import type { Node as BANode, Link as BALink } from '../utils/ba'
 import '../styles/NetworkGraph.css'
 
@@ -343,117 +344,67 @@ export default function NetworkGraph({
     }
   }, [nodes, links, isAnimating, width, height])
 
+  // Overlay summary: reuse the shared stats helper so every surface agrees.
+  const overlay = (() => {
+    const stats = computeNetworkStats(nodes, links)
+    const totalSteps = snapshotsRef.current ? snapshotsRef.current.length : 0
+    const currentStep = Math.min(stepIndexRef.current, totalSteps)
+    let status = 'idle'
+    if (currentStep >= totalSteps && totalSteps > 0) status = 'completed'
+    else if (timerRef.current) status = 'generating'
+    else if (isAnimating) status = 'paused'
+    else status = 'stopped'
+
+    const lines = [
+      `nodes ${stats.nodes}  links ${stats.links}`,
+      `step ${currentStep}/${totalSteps}  m=${attachPerStep}`,
+      `avg ${stats.avgDegree}  max ${stats.maxDegree}`,
+      `density ${stats.density.toFixed(4)}  comp ${stats.components}`,
+      `top ${stats.topNodes.map((t) => `${t.id}(${t.degree})`).join(' ') || '—'}`,
+      `status ${status}`,
+    ]
+
+    // Measure in the console font so the box hugs the text.
+    let widthPx = 210
+    try {
+      const ctx = document.createElement('canvas').getContext('2d')
+      if (ctx) {
+        ctx.font = '11.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
+        const widest = lines.reduce((max, line) => Math.max(max, ctx.measureText(line).width), 0)
+        widthPx = Math.max(150, Math.ceil(widest) + 20)
+      }
+    } catch (err) {
+      void err
+    }
+
+    return { lines, width: widthPx, height: 10 + lines.length * 16 }
+  })()
+
   return (
     <div className="network-graph">
-      {(() => {
-        const totalSteps = snapshotsRef.current ? snapshotsRef.current.length : 0
-        const currentStep = Math.min(stepIndexRef.current, totalSteps)
-        let status = 'idle'
-        if (currentStep >= totalSteps && totalSteps > 0) status = 'completed'
-        else if (timerRef.current) status = 'generating'
-        else if (isAnimating) status = 'paused'
-        else status = 'stopped'
-
-        // compute degrees from links for overlay stats
-        const degreeMap: Record<number, number> = {}
-        links.forEach((l) => {
-          degreeMap[l.source] = (degreeMap[l.source] || 0) + 1
-          degreeMap[l.target] = (degreeMap[l.target] || 0) + 1
-        })
-        const degrees = Object.values(degreeMap)
-        const totalNodes = nodes.length
-        const totalLinks = links.length
-        const avgDegree = totalNodes ? Number(((totalLinks * 2) / totalNodes).toFixed(2)) : 0
-        const maxDegree = degrees.length ? Math.max(...degrees) : 0
-        const topNodes = Object.entries(degreeMap)
-          .map(([id, deg]) => ({ id: Number(id), deg }))
-          .sort((a, b) => b.deg - a.deg)
-          .slice(0, 3)
-
-        // compute density and connected components
-        const density = totalNodes > 1 ? (2 * totalLinks) / (totalNodes * (totalNodes - 1)) : 0
-        // build adjacency
-        const adj: Record<number, number[]> = {}
-        nodes.forEach((n) => (adj[n.id] = []))
-        links.forEach((l) => {
-          adj[l.source] = adj[l.source] || []
-          adj[l.target] = adj[l.target] || []
-          adj[l.source].push(l.target)
-          adj[l.target].push(l.source)
-        })
-        const visited = new Set<number>()
-        let componentsCount = 0
-        for (const n of nodes) {
-          if (visited.has(n.id)) continue
-          componentsCount++
-          // BFS
-          const q = [n.id]
-          visited.add(n.id)
-          while (q.length) {
-            const cur = q.shift() as number
-            for (const nb of adj[cur] || []) {
-              if (!visited.has(nb)) {
-                visited.add(nb)
-                q.push(nb)
-              }
-            }
-          }
-        }
-
-        // prepare overlay lines and measure width to size the rect
-        const lines: { text: string; fontSize: number; weight?: number }[] = [
-          { text: `Nodes: ${totalNodes}  Links: ${totalLinks}`, fontSize: 12 },
-          { text: `Step: ${currentStep} / ${totalSteps}  Attach: ${attachPerStep}`, fontSize: 12 },
-          { text: `Avg deg: ${avgDegree}  Max deg: ${maxDegree}`, fontSize: 12 },
-          { text: `Top: ${topNodes.map((t) => `${t.id}(${t.deg})`).join(', ') || '—'}`, fontSize: 12 },
-          { text: `Density: ${density.toFixed(4)}  Components: ${componentsCount}`, fontSize: 12 },
-          { text: `Status: ${status}`, fontSize: 12 },
-        ]
-
-        let rectWidth = 220
-        let rectHeight = 12 + lines.length * 16
-        try {
-          if (typeof document !== 'undefined') {
-            const canvas = document.createElement('canvas')
-            const ctx = canvas.getContext('2d')
-            if (ctx) {
-              let maxW = 0
-              for (const ln of lines) {
-                const weight = ln.weight && ln.weight >= 700 ? '700' : '400'
-                ctx.font = `${weight} ${ln.fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`
-                const w = ctx.measureText(ln.text).width
-                if (w > maxW) maxW = w
-              }
-              rectWidth = Math.max(140, Math.ceil(maxW) + 22)
-              rectHeight = Math.max(44, 10 + lines.length * 16)
-            }
-          }
-        } catch (err) {
-          void err
-        }
-
-        return (
-          <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label="Barabási–Albert network graph">
-            {/* overlay UI that should not be zoomed/panned */}
-            <g className="network-overlay" transform="translate(8,8)">
-              <rect x={0} y={0} width={rectWidth} height={rectHeight} />
-              {lines.map((ln, i) => (
-                <text
-                  key={i}
-                  x={8}
-                  y={15 + i * 16}
-                  className={i === 0 || ln.text.startsWith('Status') ? 'is-accent' : undefined}
-                  style={{ fontWeight: ln.weight || 400 }}
-                >
-                  {ln.text}
-                </text>
-              ))}
-            </g>
-          </svg>
-        )
-      })()}
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
+        role="img"
+        aria-label="Barabási–Albert network graph"
+      >
+        {/* Overlay stays outside the zoom container so it never pans away. */}
+        <g className="network-overlay" transform="translate(8,8)">
+          <rect x={0} y={0} width={overlay.width} height={overlay.height} />
+          {overlay.lines.map((line, index) => (
+            <text
+              key={line}
+              x={8}
+              y={15 + index * 16}
+              className={index === 0 ? 'is-accent' : undefined}
+            >
+              {line}
+            </text>
+          ))}
+        </g>
+      </svg>
       <div className="network-tooltip" ref={tooltipRef} />
     </div>
   )
 }
-

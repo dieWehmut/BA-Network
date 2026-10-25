@@ -33,8 +33,8 @@
 
 /* Stats overlay: flat console box, accent label colour, no shadow. */
 .network-graph .network-overlay rect {
-  fill: color-mix(in srgb, var(--site-bg) 88%, var(--site-text));
-  stroke: var(--console-border-strong);
+  fill: var(--console-surface);
+  stroke: var(--console-hairline);
   stroke-width: 1;
 }
 
@@ -55,9 +55,9 @@
   z-index: 3;
   display: none;
   padding: 3px 8px;
-  border: 1px solid var(--console-border-strong);
+  border: 1px solid var(--console-hairline);
   color: var(--console-accent);
-  background: color-mix(in srgb, var(--site-bg) 90%, var(--site-text));
+  background: var(--console-surface);
   font-size: 0.72rem;
   white-space: pre;
   pointer-events: none;
