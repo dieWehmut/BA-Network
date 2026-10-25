@@ -194,8 +194,8 @@ export default function NetworkGraph({
       .selectAll('line')
       .data(links)
       .join('line')
-      .attr('stroke', '#999')
-      .attr('stroke-opacity', 0.6)
+      .attr('stroke', 'currentColor')
+      .attr('stroke-opacity', 0.34)
 
     const degreeMap: Record<number, number> = {}
     links.forEach((l) => {
@@ -209,9 +209,13 @@ export default function NetworkGraph({
       .data(nodes)
       .join('circle')
       .attr('r', (d: any) => 4 + (degreeMap[(d as any).id] || 0))
-      .attr('fill', (d: any) => ((degreeMap[(d as any).id] && degreeMap[(d as any).id] > 4) ? '#d62728' : '#1f77b4'))
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 0.6)
+      .attr('fill', (d: any) =>
+        (degreeMap[(d as any).id] && degreeMap[(d as any).id] > 4)
+          ? 'var(--site-secondary)'
+          : 'var(--site-accent)',
+      )
+      .attr('stroke', 'var(--console-bg)')
+      .attr('stroke-width', 1)
       .attr('class', 'node-circle')
       .call(
         d3
@@ -243,7 +247,7 @@ export default function NetworkGraph({
         // dim others
   container.selectAll('.nodes circle').filter(function (this: any) { return this !== event.target }).transition().duration(120).style('opacity', 0.25)
         // highlight connected links
-        container.selectAll('.links line').transition().duration(120).style('stroke-opacity', (l: any) => (l.source === nid || l.target === nid ? 1 : 0.08)).style('stroke', (l: any) => (l.source === nid || l.target === nid ? '#ff8c00' : '#999'))
+        container.selectAll('.links line').transition().duration(120).style('stroke-opacity', (l: any) => (l.source === nid || l.target === nid ? 1 : 0.08)).style('stroke', (l: any) => (l.source === nid || l.target === nid ? 'var(--console-accent)' : 'currentColor'))
         // show tooltip
         if (tooltipRef.current) {
           tooltipRef.current.style.display = 'block'
@@ -269,7 +273,7 @@ export default function NetworkGraph({
         const deg = degreeMap[nid] || 0
   d3.select(this).transition().duration(120).attr('r', 4 + deg)
         container.selectAll('.nodes circle').transition().duration(120).style('opacity', 1)
-        container.selectAll('.links line').transition().duration(120).style('stroke-opacity', 0.6).style('stroke', '#999')
+        container.selectAll('.links line').transition().duration(120).style('stroke-opacity', 0.34).style('stroke', 'currentColor')
         if (tooltipRef.current) tooltipRef.current.style.display = 'none'
       } catch (err) { void err }
     })
@@ -340,7 +344,7 @@ export default function NetworkGraph({
   }, [nodes, links, isAnimating, width, height])
 
   return (
-    <div className="network-graph" style={{ width, height, border: '1px solid #ddd' }}>
+    <div className="network-graph">
       {(() => {
         const totalSteps = snapshotsRef.current ? snapshotsRef.current.length : 0
         const currentStep = Math.min(stepIndexRef.current, totalSteps)
@@ -407,7 +411,7 @@ export default function NetworkGraph({
         ]
 
         let rectWidth = 220
-        let rectHeight = 20 + lines.length * 16
+        let rectHeight = 12 + lines.length * 16
         try {
           if (typeof document !== 'undefined') {
             const canvas = document.createElement('canvas')
@@ -416,12 +420,12 @@ export default function NetworkGraph({
               let maxW = 0
               for (const ln of lines) {
                 const weight = ln.weight && ln.weight >= 700 ? '700' : '400'
-                ctx.font = `${weight} ${ln.fontSize}px Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial`
+                ctx.font = `${weight} ${ln.fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`
                 const w = ctx.measureText(ln.text).width
                 if (w > maxW) maxW = w
               }
-              rectWidth = Math.max(140, Math.ceil(maxW) + 28)
-              rectHeight = Math.max(48, 12 + lines.length * 18)
+              rectWidth = Math.max(140, Math.ceil(maxW) + 22)
+              rectHeight = Math.max(44, 10 + lines.length * 16)
             }
           }
         } catch (err) {
@@ -429,19 +433,26 @@ export default function NetworkGraph({
         }
 
         return (
-          <svg ref={svgRef} width={width} height={height}>
+          <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label="Barabási–Albert network graph">
             {/* overlay UI that should not be zoomed/panned */}
-            <g className="network-overlay" transform={`translate(0,0)`}> 
-                <rect x={0} y={0} rx={8} ry={8} width={rectWidth} height={rectHeight} fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.06)" />
-                {lines.map((ln, i) => (
-                  <text key={i} x={8} y={14 + i * 18} fontSize={ln.fontSize} fill="#fff" style={{ fontWeight: ln.weight || 400 }}>
-                    {ln.text}
-                  </text>
-                ))}
-              </g>
+            <g className="network-overlay" transform="translate(8,8)">
+              <rect x={0} y={0} width={rectWidth} height={rectHeight} />
+              {lines.map((ln, i) => (
+                <text
+                  key={i}
+                  x={8}
+                  y={15 + i * 16}
+                  className={i === 0 || ln.text.startsWith('Status') ? 'is-accent' : undefined}
+                  style={{ fontWeight: ln.weight || 400 }}
+                >
+                  {ln.text}
+                </text>
+              ))}
+            </g>
           </svg>
         )
       })()}
+      <div className="network-tooltip" ref={tooltipRef} />
     </div>
   )
 }

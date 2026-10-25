@@ -1,10 +1,10 @@
-/* Network graph card */
+/* Network graph — terminal-styled canvas surface. */
 .network-graph {
-  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.03));
-  border-radius: 10px;
-  padding: 8px;
-  box-shadow: 0 8px 26px rgba(0,0,0,0.25);
-  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  background: var(--console-bg);
 }
 
 .network-graph svg {
@@ -13,22 +13,7 @@
   height: 100%;
   background: transparent;
   cursor: grab;
-}
-
-.network-graph .network-overlay rect {
-  fill: rgba(2,6,23,0.55);
-  stroke: rgba(255,255,255,0.06);
-}
-
-.network-graph .network-overlay text {
-  fill: #fff;
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-}
-
-.network-graph svg {
-  padding: 0; /* ensure svg content can sit at edge */
+  touch-action: none;
 }
 
 .network-graph svg:active {
@@ -36,28 +21,50 @@
 }
 
 .network-graph .links line {
-  stroke: rgba(120,120,120,0.6);
+  stroke: color-mix(in srgb, var(--site-text) 34%, transparent);
+  stroke-width: 1;
 }
 
 .network-graph .nodes circle {
-  stroke: rgba(255,255,255,0.06);
+  stroke: var(--console-bg);
+  stroke-width: 1;
+  transition: fill 0.12s ease;
 }
 
-/* ensure the card and svg adapt to small screens */
-@media (max-width: 980px) {
-  .network-graph {
-    padding: 6px;
-    border-radius: 8px;
-  }
+/* Stats overlay: flat console box, accent label colour, no shadow. */
+.network-graph .network-overlay rect {
+  fill: color-mix(in srgb, var(--site-bg) 88%, var(--site-text));
+  stroke: var(--console-border-strong);
+  stroke-width: 1;
 }
 
-@media (max-width: 520px) {
-  .network-graph {
-    box-shadow: none;
-    border-radius: 6px;
-    padding: 6px;
-  }
-  .network-graph svg {
-    touch-action: none; /* allow d3 zoom to handle gestures */
+.network-graph .network-overlay text {
+  fill: var(--console-text);
+  font-family: var(--console-font);
+  font-size: 11.5px;
+  letter-spacing: 0.01em;
+}
+
+.network-graph .network-overlay text.is-accent {
+  fill: var(--console-accent);
+}
+
+/* Node tooltip follows the pointer. */
+.network-tooltip {
+  position: absolute;
+  z-index: 3;
+  display: none;
+  padding: 3px 8px;
+  border: 1px solid var(--console-border-strong);
+  color: var(--console-accent);
+  background: color-mix(in srgb, var(--site-bg) 90%, var(--site-text));
+  font-size: 0.72rem;
+  white-space: pre;
+  pointer-events: none;
+}
+
+@media (max-width: 560px) {
+  .network-graph .network-overlay text {
+    font-size: 10.5px;
   }
 }

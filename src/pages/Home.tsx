@@ -101,7 +101,7 @@ export default function Home() {
       <div className="console-main">
         <div className="console-panel">
           <div className="console-panel__title">DEGREE DISTRIBUTION</div>
-          <DegreeHistogram nodes={nodes} links={links} width={1880} height={300} />
+          <DegreeHistogram nodes={nodes} links={links} width={720} height={280} />
         </div>
         <div className="console-panel">
           <ControlsPanel
