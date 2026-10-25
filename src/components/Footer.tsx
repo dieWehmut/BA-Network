@@ -14,7 +14,11 @@ function formatUptime(ms: number) {
   return `Uptime: ${d} d ${h} h ${m} m ${s} s`
 }
 
-export default function Footer() {
+type Props = {
+  repoUrl?: string
+}
+
+export default function Footer({ repoUrl = 'https://github.com/dieWehmut/BA-Network' }: Props) {
   const [uptime, setUptime] = useState(() => formatUptime(Date.now() - START.getTime()))
 
   useEffect(() => {
@@ -27,7 +31,7 @@ export default function Footer() {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
         <div>{uptime}</div>
         <div>
-          <a href="https://github.com/dieWehmut/BA-Network" target="_blank" rel="noreferrer" aria-label="GitHub">
+          <a href={repoUrl} target="_blank" rel="noreferrer" aria-label="GitHub">
             <button style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               {/* GitHub icon (simple SVG) */}
               <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden>

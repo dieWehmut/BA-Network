@@ -1,0 +1,330 @@
+/* ------------------------------------------------------------------
+ * Console layout — the terminal-style shell used by dieWehmut.github.io
+ * ------------------------------------------------------------------ */
+
+.console-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  color: var(--console-text);
+  background: var(--console-bg);
+  font-family: var(--console-font);
+}
+
+/* --- chrome bar --------------------------------------------------- */
+
+.console-chrome {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--console-border);
+  background: var(--console-bg);
+}
+
+.console-chrome__brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.9rem;
+}
+
+.console-chrome__brand span {
+  color: var(--console-accent);
+  font-weight: 800;
+}
+
+.console-chrome__brand strong {
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.console-chrome__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* --- buttons ------------------------------------------------------ */
+
+.console-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: fit-content;
+  min-height: 30px;
+  padding: 3px 10px;
+  border: 1px solid var(--console-border-strong);
+  border-radius: 0;
+  color: var(--console-accent);
+  background: var(--console-control);
+  font: inherit;
+  font-size: 0.74rem;
+  text-decoration: none;
+  transition: color 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.console-button:hover,
+.console-button:focus-visible {
+  color: var(--console-text);
+  background: var(--console-control-strong);
+  outline: none;
+}
+
+.console-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.console-button--ghost {
+  color: var(--console-muted);
+  background: transparent;
+}
+
+.console-button--ghost:hover,
+.console-button--ghost:focus-visible {
+  color: var(--console-accent);
+  background: var(--console-selection);
+}
+
+/* --- overview grid ------------------------------------------------ */
+
+.console-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  width: 100%;
+  border-bottom: 1px solid var(--console-border);
+}
+
+.console-overview__stage {
+  display: flex;
+  min-width: 0;
+  min-height: 360px;
+  border-right: 1px solid var(--console-border);
+}
+
+.console-overview__dashboard {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 18px 20px;
+}
+
+/* --- sections ----------------------------------------------------- */
+
+.console-section {
+  padding: 0 0 18px;
+}
+
+.console-section + .console-section {
+  padding-top: 2px;
+}
+
+.console-section__title {
+  margin-bottom: 7px;
+  color: var(--console-accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.console-section__rows {
+  display: grid;
+  grid-template-columns: minmax(96px, max-content) minmax(0, 1fr);
+  gap: 2px 18px;
+  margin: 0;
+}
+
+.console-row {
+  display: contents;
+}
+
+.console-row__label {
+  margin: 0;
+  color: var(--console-muted);
+  font-size: 0.78rem;
+}
+
+.console-row__value {
+  margin: 0;
+  overflow: hidden;
+  color: var(--console-text);
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.console-row__value a:hover {
+  color: var(--console-accent);
+}
+
+.console-section__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 10px 18px;
+}
+
+.console-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.console-stat__label {
+  color: var(--console-muted);
+  font-size: 0.78rem;
+}
+
+.console-stat__value {
+  color: var(--console-accent);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.console-muted {
+  color: var(--console-muted);
+}
+
+.console-dim {
+  color: var(--console-dim);
+}
+
+/* --- main working area -------------------------------------------- */
+
+.console-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1px;
+  width: 100%;
+  border-bottom: 1px solid var(--console-border);
+  background: var(--console-border);
+}
+
+.console-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 14px 16px;
+  background: var(--console-bg);
+}
+
+.console-panel__title {
+  margin-bottom: 8px;
+  color: var(--console-accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.console-panel__hint {
+  margin-top: 8px;
+  color: var(--console-dim);
+  font-size: 0.72rem;
+}
+
+/* --- command strip ------------------------------------------------ */
+
+.console-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 34px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--console-border);
+  background: var(--console-strip);
+  font-size: 0.8rem;
+}
+
+.console-strip__symbol {
+  color: var(--console-accent);
+  font-weight: 700;
+}
+
+.console-strip__label {
+  color: var(--console-text);
+}
+
+.console-strip__meta {
+  margin-left: auto;
+  color: var(--console-muted);
+  font-size: 0.72rem;
+}
+
+/* --- footer ------------------------------------------------------- */
+
+.console-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 20px 24px;
+  color: var(--console-dim);
+  font-size: 0.74rem;
+}
+
+.console-footer__line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.console-footer__line code {
+  color: var(--console-muted);
+  font: inherit;
+}
+
+.console-footer a {
+  color: var(--console-muted);
+}
+
+.console-footer a:hover {
+  color: var(--console-accent);
+}
+
+/* --- responsive --------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .console-overview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .console-overview__stage {
+    min-height: 320px;
+    border-right: 0;
+    border-bottom: 1px solid var(--console-border);
+  }
+
+  .console-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .console-chrome {
+    padding: 0 12px;
+  }
+
+  .console-overview__dashboard,
+  .console-panel {
+    padding: 14px 12px;
+  }
+
+  .console-strip {
+    padding: 0 12px;
+  }
+
+  .console-strip__meta {
+    display: none;
+  }
+
+  .console-footer {
+    padding: 12px 12px 20px;
+  }
+}

@@ -10,6 +10,8 @@ type Props = {
   steps: number
   generationId: number
   onNodesUpdate?: (nodes: BANode[], links: BALink[]) => void
+  /** Reports generation progress to the console dashboard. */
+  onProgress?: (currentStep: number, totalSteps: number, status: string) => void
   width?: number
   height?: number
   stopSignal?: number
@@ -24,6 +26,7 @@ export default function NetworkGraph({
   steps,
   generationId,
   onNodesUpdate,
+  onProgress,
   width = 720,
   height = 480,
   stopSignal,
@@ -52,6 +55,7 @@ export default function NetworkGraph({
         t.stop()
         timerRef.current = null
         setIsAnimating(false)
+        if (onProgress) onProgress(snaps.length, snaps.length, 'completed')
         return
       }
       const snap = snaps[idx]
@@ -59,6 +63,7 @@ export default function NetworkGraph({
       setLinks(snap.links)
       if (onNodesUpdate) onNodesUpdate(snap.nodes, snap.links)
       stepIndexRef.current = idx + 1
+      if (onProgress) onProgress(idx + 1, snaps.length, 'generating')
     }, delay)
     timerRef.current = t
   }
@@ -67,6 +72,7 @@ export default function NetworkGraph({
     // Do NOT auto-regenerate when parameter props change.
     const snapshots = generateBASnapshots(initialNodes, attachPerStep, steps)
     snapshotsRef.current = snapshots
+    if (onProgress) onProgress(0, snapshots.length, 'generating')
 
     // initial nodes/links for this run
     const initialNodesArr = snapshots.length ? snapshots[0].nodes.slice(0, initialNodes) : Array.from({ length: initialNodes }).map((_, i) => ({ id: i }))
@@ -108,7 +114,10 @@ export default function NetworkGraph({
       }
       // stop adding new nodes but keep the simulation running so the layout continues to move
       setIsAnimating(true)
+      const snaps = snapshotsRef.current || []
+      if (onProgress) onProgress(stepIndexRef.current, snaps.length, 'paused')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pauseSignal])
 
   useEffect(() => {
@@ -118,6 +127,7 @@ export default function NetworkGraph({
         const delay = typeof tickDelay === 'number' ? tickDelay : 600
         startTimer(delay)
         setIsAnimating(true)
+        if (onProgress) onProgress(stepIndexRef.current, snaps.length, 'generating')
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
