@@ -29,9 +29,12 @@ export default function DegreeHistogram({ nodes, links, width = 720, height = 26
     const zoomLayer = svg.select('g.zoom-layer')
     if (zoomLayer.empty()) return
 
-    const zoom: any = d3.zoom().on('zoom', (event: any) => {
-      zoomLayer.attr('transform', event.transform.toString())
-    })
+    // The bundled d3 shim is untyped, so describe just the shape we touch.
+    const zoom = d3
+      .zoom()
+      .on('zoom', (event: { transform: { toString(): string } }) => {
+        zoomLayer.attr('transform', event.transform.toString())
+      })
 
     const svgNode = svg.node() as unknown as { __hasZoom?: boolean }
     if (!svgNode.__hasZoom) {
