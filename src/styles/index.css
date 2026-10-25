@@ -19,16 +19,17 @@
   color-scheme: dark;
 }
 
+/* Light palette mirrors dieWehmut.github.io: purple accent on white. */
 :root[data-theme='light'] {
   --site-bg: #ffffff;
   --site-sidebar-bg: rgba(255, 255, 255, 0.96);
   --site-text: #000000;
   --site-muted: #444444;
   --site-border: rgba(0, 0, 0, 0.1);
-  --site-accent: #1a9e1a;
-  --site-accent-rgb: 26 158 26;
-  --site-secondary: #8f35ff;
-  --site-tertiary: #e64a97;
+  --site-accent: #8f35ff;
+  --site-accent-rgb: 143 53 255;
+  --site-secondary: #e64a97;
+  --site-tertiary: #1a9e1a;
   --site-tag-color: rgba(88, 62, 126, 0.92);
 
   color-scheme: light;
@@ -104,7 +105,8 @@ body {
   color: var(--site-text);
   background: var(--site-bg);
   font-family: var(--console-font);
-  font-size: 0.9rem;
+  /* 16px base so the rem-based console scale lands on the reference sizes. */
+  font-size: 1rem;
   line-height: 1.5;
 }
 

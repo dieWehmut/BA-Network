@@ -146,14 +146,14 @@
 .console-row__label {
   margin: 0;
   color: var(--console-muted);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
 }
 
 .console-row__value {
   margin: 0;
   overflow: hidden;
   color: var(--console-text);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -176,7 +176,7 @@
 
 .console-stat__label {
   color: var(--console-muted);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
 }
 
 .console-stat__value {
